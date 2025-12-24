@@ -1,0 +1,436 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3" pages="2">
+  <diagram name="ページ1" id="3WuvxmgrtqAfumqlq1Nz">
+    <mxGraphModel dx="1028" dy="611" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="THwmUZZWm9NdHOQoiFId-38" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-1" target="THwmUZZWm9NdHOQoiFId-36" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-1" value="戦闘開始" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-6" target="THwmUZZWm9NdHOQoiFId-9" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-6" value="敵のバトルページ決定" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="420" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-7" target="THwmUZZWm9NdHOQoiFId-8" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="280" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-7" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-7" value="敵が行動できるか&lt;div&gt;チェック&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="280" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-8" target="THwmUZZWm9NdHOQoiFId-6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-8" value="敵の速度決定" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="350" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-9" target="THwmUZZWm9NdHOQoiFId-11" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="520" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-9" target="THwmUZZWm9NdHOQoiFId-22" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-9" value="味方が行動できるか&lt;div&gt;チェック&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="440" y="280" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-11" target="THwmUZZWm9NdHOQoiFId-12" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-11" value="味方の速度決定" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="440" y="350" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-12" target="THwmUZZWm9NdHOQoiFId-22" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="520" y="480" />
+              <mxPoint x="640" y="480" />
+              <mxPoint x="640" y="300" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-12" value="味方のバトルページ決定" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="440" y="420" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-22" target="THwmUZZWm9NdHOQoiFId-25" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-22" value="速度順に行動" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="680" y="280" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-41" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-25" target="THwmUZZWm9NdHOQoiFId-26" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-49" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-25" target="THwmUZZWm9NdHOQoiFId-48" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-25" value="バトルページを&lt;div&gt;順に処理&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="680" y="350" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-42" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-26" target="THwmUZZWm9NdHOQoiFId-27" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-26" target="THwmUZZWm9NdHOQoiFId-28" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-26" value="死亡判定" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="920" y="340" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-27" target="THwmUZZWm9NdHOQoiFId-48" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1320" y="360" />
+              <mxPoint x="1320" y="490" />
+              <mxPoint x="760" y="490" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-27" value="死亡エフェクト" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1120" y="340" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-28" target="THwmUZZWm9NdHOQoiFId-29" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-47" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-28" target="THwmUZZWm9NdHOQoiFId-25" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1000" y="470" />
+              <mxPoint x="880" y="470" />
+              <mxPoint x="880" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-28" value="混乱判定" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="920" y="410" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-45" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-29" target="THwmUZZWm9NdHOQoiFId-25" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1300" y="430" />
+              <mxPoint x="1300" y="470" />
+              <mxPoint x="880" y="470" />
+              <mxPoint x="880" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-29" value="混乱エフェクト" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1120" y="410" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-36" target="THwmUZZWm9NdHOQoiFId-37" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-36" value="敵が&lt;div&gt;初期バトルページを引く&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="110" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-37" target="THwmUZZWm9NdHOQoiFId-7" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-37" value="味方が&lt;div&gt;初期バトルページを引く&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="180" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-57" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-48" target="THwmUZZWm9NdHOQoiFId-53" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-48" value="行動終了" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="680" y="510" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-53" target="THwmUZZWm9NdHOQoiFId-54" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-62" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-53" target="THwmUZZWm9NdHOQoiFId-59" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-53" value="敵全滅判定" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="680" y="580" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-63" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-54" target="THwmUZZWm9NdHOQoiFId-60" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-65" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-54" target="THwmUZZWm9NdHOQoiFId-61" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-54" value="味方全滅判定" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="680" y="650" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-59" value="勝利" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="880" y="580" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-60" value="敗北" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="880" y="650" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-66" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-61" target="THwmUZZWm9NdHOQoiFId-64" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-61" value="戦闘配置リセット" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="680" y="720" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-67" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="THwmUZZWm9NdHOQoiFId-64" target="THwmUZZWm9NdHOQoiFId-7" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="760" y="850" />
+              <mxPoint x="160" y="850" />
+              <mxPoint x="160" y="250" />
+              <mxPoint x="280" y="250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="THwmUZZWm9NdHOQoiFId-64" value="バトルページを1枚引く" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="680" y="790" width="160" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="ページ2" id="Z9jOket__LvRePNMO5ny">
+    <mxGraphModel dx="1028" dy="611" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-0" />
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-1" parent="XI59MMIlqZoAgXJq7tJK-0" />
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-3" target="XI59MMIlqZoAgXJq7tJK-34" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-3" value="戦闘開始" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="200" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-5" target="DQ_KWQNENNL-JLs8hOrO-6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-5" value="敵のバトルページ決定" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="200" y="530" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-8" target="XI59MMIlqZoAgXJq7tJK-10" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="280" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-8" target="DQ_KWQNENNL-JLs8hOrO-4" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="410" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-8" value="敵が行動できるか&lt;div&gt;チェック&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="200" y="390" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-10" target="XI59MMIlqZoAgXJq7tJK-5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-10" value="敵の速度決定" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="200" y="460" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-13" target="XI59MMIlqZoAgXJq7tJK-15" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="520" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-13" target="XI59MMIlqZoAgXJq7tJK-19" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-13" value="味方が行動できるか&lt;div&gt;チェック&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="440" y="390" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-15" target="XI59MMIlqZoAgXJq7tJK-17" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-15" value="味方の速度決定" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="440" y="460" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-17" target="XI59MMIlqZoAgXJq7tJK-19" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="520" y="590" />
+              <mxPoint x="640" y="590" />
+              <mxPoint x="640" y="410" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-17" value="味方がバトルページ・&lt;div&gt;ターゲット選択&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="440" y="530" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-19" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-19" value="行動順決定" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="720" y="390" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="DQ_KWQNENNL-JLs8hOrO-12" target="XI59MMIlqZoAgXJq7tJK-25" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="880" y="680" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" target="DQ_KWQNENNL-JLs8hOrO-10" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="500" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-25" target="XI59MMIlqZoAgXJq7tJK-27" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-25" target="XI59MMIlqZoAgXJq7tJK-30" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-25" value="死亡判定" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="960" y="670" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-27" target="DQ_KWQNENNL-JLs8hOrO-22" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1040" y="810" />
+              <mxPoint x="1360" y="810" />
+              <mxPoint x="1360" y="480" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-27" value="死亡エフェクト" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="960" y="740" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-32" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="880" y="480" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1360" y="760" />
+              <mxPoint x="1360" y="480" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-32" value="混乱エフェクト" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="1160" y="740" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-34" target="XI59MMIlqZoAgXJq7tJK-36" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-34" value="敵のバトルページ補充" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="200" y="110" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="DQ_KWQNENNL-JLs8hOrO-2" target="XI59MMIlqZoAgXJq7tJK-8" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="280" y="380" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-36" target="DQ_KWQNENNL-JLs8hOrO-0" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-36" value="味方のバトルページ補充" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="200" y="180" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-38" target="XI59MMIlqZoAgXJq7tJK-41" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-38" value="ラウンド終了" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="720" y="770" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-41" target="XI59MMIlqZoAgXJq7tJK-44" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-41" target="XI59MMIlqZoAgXJq7tJK-45" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-41" value="敵全滅判定" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="720" y="840" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-42" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-44" target="XI59MMIlqZoAgXJq7tJK-46" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-44" target="XI59MMIlqZoAgXJq7tJK-48" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-44" value="味方全滅判定" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="720" y="910" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-45" value="勝利" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="920" y="840" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-46" value="敗北" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="920" y="910" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-47" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-48" target="DQ_KWQNENNL-JLs8hOrO-0" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="760" y="900" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="800" y="1050" />
+              <mxPoint x="160" y="1050" />
+              <mxPoint x="160" y="270" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-48" value="戦闘配置リセット" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="720" y="980" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="DQ_KWQNENNL-JLs8hOrO-0" target="DQ_KWQNENNL-JLs8hOrO-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-0" value="ラウンド開始" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="200" y="250" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-2" value="敵がバトルページを&lt;div&gt;1枚引く&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="200" y="320" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="DQ_KWQNENNL-JLs8hOrO-4" target="XI59MMIlqZoAgXJq7tJK-13" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-4" value="味方がバトルページを&lt;div&gt;1枚引く&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="440" y="320" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="DQ_KWQNENNL-JLs8hOrO-6" target="DQ_KWQNENNL-JLs8hOrO-4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-6" value="敵がターゲット選択" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="200" y="600" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="DQ_KWQNENNL-JLs8hOrO-10" target="DQ_KWQNENNL-JLs8hOrO-11" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-10" value="行動：ダイスロール" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="720" y="530" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="DQ_KWQNENNL-JLs8hOrO-11" target="DQ_KWQNENNL-JLs8hOrO-12" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-11" value="行動：ダイス判定処理" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="720" y="600" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-12" value="行動：ダメージ計算" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="720" y="670" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-30" target="XI59MMIlqZoAgXJq7tJK-32" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="XI59MMIlqZoAgXJq7tJK-30" target="DQ_KWQNENNL-JLs8hOrO-22" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1360" y="690" />
+              <mxPoint x="1360" y="480" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XI59MMIlqZoAgXJq7tJK-30" value="混乱判定" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="1160" y="670" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="XI59MMIlqZoAgXJq7tJK-1" source="DQ_KWQNENNL-JLs8hOrO-22" target="XI59MMIlqZoAgXJq7tJK-38" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="480" />
+              <mxPoint x="680" y="740" />
+              <mxPoint x="800" y="740" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DQ_KWQNENNL-JLs8hOrO-22" value="敵味方行動&lt;div&gt;終了判定&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="XI59MMIlqZoAgXJq7tJK-1" vertex="1">
+          <mxGeometry x="720" y="460" width="160" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
