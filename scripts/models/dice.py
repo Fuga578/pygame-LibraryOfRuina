@@ -1,6 +1,6 @@
+import random
 from dataclasses import dataclass
 from enum import Enum
-from scripts.models.card import Card
 
 
 class DiceType(Enum):
@@ -10,13 +10,15 @@ class DiceType(Enum):
     PIERCE = "突き"
     BLUNT = "打撃"
 
-
 @dataclass
 class Dice:
     min_val: int        # ダイスの最小値
     max_val: int        # ダイスの最大値
     d_type: DiceType    # ダイスの種類
     val: int | None = None     # ダイスの値
+
+    def roll(self):
+        self.val = random.randint(self.min_val, self.max_val)
 
 
 @dataclass
@@ -26,4 +28,12 @@ class VelocityDice:
     val: int | None = None
     owner: "Unit" = None
     target: "VelocityDice" = None
-    card: Card = None
+    card: "Card" = None
+
+    def init(self):
+        self.val = None
+        self.target = None
+        self.card = None
+
+    def roll(self):
+        self.val = random.randint(self.min_val, self.max_val)
