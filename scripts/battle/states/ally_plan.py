@@ -38,7 +38,10 @@ class AllyPlanState(BattleState):
         # 速度ダイス選択フェーズ
         if self.phase == AllyPlanPhase.SELECT_VELOCITY:
             # ダイス選択
-            self._select_next_vel_dice()
+            if self._select_next_vel_dice():
+                # 次の状態へ遷移
+                self._go_next_state()
+                return
 
             self.phase = AllyPlanPhase.SELECT_CARD
             return
@@ -56,12 +59,14 @@ class AllyPlanState(BattleState):
             # プレイできるカードのみ抽出
             playable_cards = [card for card in ally.deck.hand_cards if ally.can_play_card(card)]
             if len(playable_cards) <= 0:
-                # 次の状態へ遷移
-                self._go_next_state()
-                return
+                # 次の速度ダイス判定
+                self._select_next_vel_dice()
 
             # カードをランダムに選択
             card = random.choice(playable_cards)
+            if not ally.pay_light(card.cost):
+                # 次の速度ダイス判定
+                self._select_next_vel_dice()
             vel_dice.card = card
             self.scene.context.selected_card = card
 
@@ -94,23 +99,29 @@ class AllyPlanState(BattleState):
     def render(self, surface) -> None:
         pass
 
-    def _select_next_vel_dice(self):
+    def _select_next_vel_dice(self) -> bool:
         """カード未設定ダイスを取得"""
         for vel_dice in self.scene.ally_slots:
+            # チェック済みの場合
+            if not vel_dice.is_checked:
+                continue
+            vel_dice.is_checked = True
+
             if vel_dice.val is None:
                 continue
             if vel_dice.owner.is_confused():
                 continue
             if vel_dice.card is None:
                 self.scene.context.selected_vel = vel_dice
-                return
+                return True
+
+        return False
 
     def _finish_current_vel_and_next(self):
         self.scene.context.selected_vel = None
         self.scene.context.selected_card = None
         self.scene.context.selected_target = None
         self.phase = AllyPlanPhase.SELECT_VELOCITY
-        self._select_next_vel_dice()
 
     def _go_next_state(self):
         # 次の状態へ遷移

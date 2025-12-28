@@ -29,11 +29,13 @@ class VelocityDice:
     owner: "Unit" = None
     target: "VelocityDice" = None
     card: "Card" = None
+    is_checked: bool = False
 
     def init(self):
         self.val = None
         self.target = None
         self.card = None
+        self.is_checked = False
 
     def roll(self):
         self.val = random.randint(self.min_val, self.max_val)

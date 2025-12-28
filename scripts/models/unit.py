@@ -52,7 +52,16 @@ class Unit:
         return self.confusion_resist <= 0
 
     def can_play_card(self, card: Card) -> bool:
-        return self.light >= card.cost
+        return self.light >= card.cost and not self.is_confused()
 
     def is_dead(self):
         return self.hp <= 0
+
+    def recover_light(self, amount: int = 1):
+        self.light = min(self.max_light, self.light + amount)
+
+    def pay_light(self, cost: int) -> bool:
+        if self.light < cost:
+            return False
+        self.light -= cost
+        return True

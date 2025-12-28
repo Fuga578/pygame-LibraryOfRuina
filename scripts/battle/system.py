@@ -31,12 +31,14 @@ class BattleSystem:
     def start_round(self, units: list[Unit]):
         for unit in units:
 
+            # 光回復
+            unit.recover_light(amount=1)
+
             # 速度ダイス初期化
             for vel_dice in unit.velocity_dice_list:
                 vel_dice.init()
 
             # カードをドロー
-            unit.deck.shuffle_draw_pile()
             unit.deck.draw(num=1)
 
             # 混乱していない場合、速度ダイスを振る
@@ -79,14 +81,14 @@ class BattleSystem:
 
             # カードをランダムに選択
             card = random.choice(playable_cards)
+            if not enemy.pay_light(card.cost):
+                continue
             enemy.deck.remove_card(card)
+            vel_dice.card = card
 
             # ターゲットをランダムに選択
             target_candidates = [vd for vd in ally_slots]
             target = random.choice(target_candidates)
-
-            # カードとターゲットを確定
-            vel_dice.card = card
             vel_dice.target = target
 
     def evaluate_clashes(self, all_slots: list) -> list[ClashInfo]:
