@@ -2,6 +2,7 @@ from scripts.battle.states.base import BattleState
 from scripts.utils.dev_utils import create_sample_cards
 from scripts.models.deck import Deck
 from scripts.models.unit import Unit
+from copy import deepcopy
 
 
 class BattleStartState(BattleState):
@@ -44,8 +45,7 @@ class BattleStartState(BattleState):
         card_list = create_sample_cards()
 
         # デッキ作成
-        ally_deck = Deck(card_list)
-        enemy_deck = Deck(card_list)
+        deck = Deck(card_list)
 
         # ユニット作成
         ally1 = Unit(
@@ -55,10 +55,21 @@ class BattleStartState(BattleState):
             max_light=3,
             min_speed=1,
             max_speed=6,
-            deck=ally_deck,
+            deck=deepcopy(deck),
             is_ally=True,
         )
-        self.scene.allies = [ally1]
+        self.scene.allies.append(ally1)
+        # ally2 = Unit(
+        #     name="Ally2",
+        #     max_hp=30,
+        #     max_confusion_resist=10,
+        #     max_light=3,
+        #     min_speed=1,
+        #     max_speed=6,
+        #     deck=deepcopy(deck),
+        #     is_ally=True,
+        # )
+        # self.scene.allies.append(ally2)
 
         enemy1 = Unit(
             name="Enemy1",
@@ -67,10 +78,21 @@ class BattleStartState(BattleState):
             max_light=3,
             min_speed=1,
             max_speed=6,
-            deck=enemy_deck,
+            deck=deepcopy(deck),
             is_ally=False,
         )
-        self.scene.enemies = [enemy1]
+        self.scene.enemies.append(enemy1)
+        # enemy2 = Unit(
+        #     name="Enemy2",
+        #     max_hp=30,
+        #     max_confusion_resist=10,
+        #     max_light=3,
+        #     min_speed=1,
+        #     max_speed=6,
+        #     deck=deepcopy(deck),
+        #     is_ally=False,
+        # )
+        # self.scene.enemies.append(enemy2)
 
     def _go_next_state(self):
         # 次の状態へ遷移

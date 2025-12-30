@@ -1,6 +1,8 @@
 import random
 from dataclasses import dataclass
 from enum import Enum
+from collections import deque
+from typing import Deque
 
 
 class DiceType(Enum):
@@ -9,6 +11,36 @@ class DiceType(Enum):
     SLASH = "斬撃"
     PIERCE = "突き"
     BLUNT = "打撃"
+
+
+EVADE_TYPES = [
+    DiceType.EVADE,
+]
+
+
+BLOCK_TYPES = [
+    DiceType.BLOCK,
+]
+
+
+ATTACK_TYPES = [
+    DiceType.SLASH,
+    DiceType.PIERCE,
+    DiceType.BLUNT,
+]
+
+
+def is_evade(dice):
+    return dice.d_type in EVADE_TYPES
+
+
+def is_block(dice):
+    return dice.d_type in BLOCK_TYPES
+
+
+def is_attack(dice):
+    return dice.d_type in ATTACK_TYPES
+
 
 @dataclass
 class Dice:
@@ -19,6 +51,7 @@ class Dice:
 
     def roll(self):
         self.val = random.randint(self.min_val, self.max_val)
+        return self.val
 
 
 @dataclass
@@ -39,3 +72,4 @@ class VelocityDice:
 
     def roll(self):
         self.val = random.randint(self.min_val, self.max_val)
+        return self.val

@@ -1,8 +1,9 @@
 import random
 from scripts.models.unit import Unit
-from scripts.models.dice import VelocityDice
+from scripts.models.dice import VelocityDice, is_attack, is_block, is_evade
 from enum import Enum, auto
 from dataclasses import dataclass
+from collections import deque
 
 
 class ClashType(Enum):
@@ -31,12 +32,11 @@ class BattleSystem:
     def start_round(self, units: list[Unit]):
         for unit in units:
 
+            # 初期化
+            unit.init()
+
             # 光回復
             unit.recover_light(amount=1)
-
-            # 速度ダイス初期化
-            for vel_dice in unit.velocity_dice_list:
-                vel_dice.init()
 
             # カードをドロー
             unit.deck.draw(num=1)
@@ -110,29 +110,196 @@ class BattleSystem:
 
     def resolve_attack(self, all_slots, clash_infos):
         # clash_infos からマッチしているペアを作成
-        clash_set = set()
+        clash_pairs = set()
         for info in clash_infos:
             if info.clash_type.name == "CLASH":
                 attacker = info.attacker
                 defender = info.defender
-                clash_set.add((id(attacker), id(defender)))
-                clash_set.add((id(defender), id(attacker)))
+                pair = (min(id(attacker), id(defender)), max(id(attacker), id(defender)))
+                clash_pairs.add(pair)
 
+        # idから速度ダイスを取得するための辞書
+        vel_dice_by_id = {id(v): v for v in all_slots}
+
+        # マッチ済みの速度ダイスID保存用
+        processed_vel_ids = set()
+
+        # マッチ処理
+        for attacker_id, defender_id in clash_pairs:
+            attacker_vel_dice = vel_dice_by_id.get(attacker_id)
+            defenter_vel_dice = vel_dice_by_id.get(defender_id)
+            if attacker_vel_dice is None or defenter_vel_dice is None:
+                continue
+            if attacker_vel_dice.val is None or defenter_vel_dice.val is None:
+                continue
+            if attacker_vel_dice.card is None or defenter_vel_dice.card is None:
+                continue
+            if attacker_vel_dice.owner.is_dead() or defenter_vel_dice.owner.is_dead():
+                continue
+
+            # マッチ
+            self._resolve_clash_pair(attacker_vel_dice, defenter_vel_dice)
+            processed_vel_ids.add(id(attacker_vel_dice))
+            processed_vel_ids.add(id(defenter_vel_dice))
+
+        # 一方攻撃処理（マッチに参加していない速度ダイスのみ）
         for vel_dice in all_slots:
+            if id(vel_dice) in processed_vel_ids:
+                continue
             if vel_dice.val is None or vel_dice.card is None or vel_dice.target is None:
                 continue
-
-            attacker = vel_dice.owner
-            defender = vel_dice.target.owner
-            if attacker.is_dead() or defender.is_dead():
+            if vel_dice.owner.is_dead() or vel_dice.target.owner.is_dead():
                 continue
 
-            # マッチなら “とりあえず相互に1ダメ”
-            if (id(vel_dice), id(vel_dice.target)) in clash_set:
-                defender.hp = max(0, defender.hp - 1)
-                attacker.hp = max(0, attacker.hp - 1)
+            # 一方攻撃
+            self._resolve_one_sided(vel_dice)
+
+    def _resolve_clash_pair(self, a_vel_dice, b_vel_dice):
+        a_unit = a_vel_dice.owner
+        b_unit = b_vel_dice.owner
+
+        a_dices = list(a_vel_dice.card.dice_list)
+        b_dices = list(b_vel_dice.card.dice_list)
+
+        while len(a_dices) > 0 and len(b_dices) > 0 \
+                and (not a_unit.is_dead() and not a_unit.is_confused()) \
+                and (not b_unit.is_dead() and not b_unit.is_confused()):
+            a_die = a_dices[0]
+            b_die = b_dices[0]
+
+            a_val = a_die.roll()
+            b_val = b_die.roll()
+
+            # 攻撃ダイス vs 攻撃ダイス --------------------
+            if is_attack(a_die) and is_attack(b_die):
+                a_dices.pop(0)
+                b_dices.pop(0)
+                if a_val > b_val:
+                    b_unit.take_damage(damage=a_val, dice_type=a_die.d_type)
+                elif a_val < b_val:
+                    a_unit.take_damage(damage=b_val, dice_type=b_die.d_type)
+                else:
+                    pass
+            # ------------------------------------------
+
+            # 攻撃ダイス vs 防御ダイス --------------------
+            elif is_attack(a_die) and is_block(b_die):
+                a_dices.pop(0)
+                b_dices.pop(0)
+                if a_val > b_val:
+                    b_unit.take_damage(damage=a_val - b_val, dice_type=a_die.d_type)
+                elif a_val < b_val:
+                    a_unit.take_confusion_resist_damage(damage=b_val, dice_type=b_die.d_type)
+                else:
+                    pass
+            elif is_block(a_die) and is_attack(b_die):
+                a_dices.pop(0)
+                b_dices.pop(0)
+                if a_val > b_val:
+                    b_unit.take_confusion_resist_damage(damage=a_val, dice_type=a_die.d_type)
+                elif a_val < b_val:
+                    a_unit.take_damage(damage=b_val - a_val, dice_type=b_die.d_type)
+                else:
+                    pass
+            # ------------------------------------------
+
+            # 攻撃ダイス vs 回避ダイス --------------------
+            elif is_attack(a_die) and is_evade(b_die):
+                if a_val > b_val:
+                    a_dices.pop(0)
+                    b_dices.pop(0)
+                    b_unit.take_damage(damage=a_val, dice_type=a_die.d_type)
+                elif a_val < b_val:
+                    a_dices.pop(0)
+                    b_unit.heal_confusion_resist(amount=b_val)
+                else:
+                    pass
+            elif is_evade(a_die) and is_attack(b_die):
+                if a_val > b_val:
+                    b_dices.pop(0)
+                    a_unit.heal_confusion_resist(amount=a_val)
+                elif a_val < b_val:
+                    a_dices.pop(0)
+                    b_dices.pop(0)
+                    a_unit.take_damage(damage=b_val, dice_type=b_die.d_type)
+                else:
+                    pass
+            # ------------------------------------------
+
+            # 防御ダイス vs 防御ダイス --------------------
+            elif is_block(a_die) and is_block(b_die):
+                a_dices.pop(0)
+                b_dices.pop(0)
+                if a_val > b_val:
+                    b_unit.take_confusion_resist_damage(damage=a_val, dice_type=a_die.d_type)
+                elif a_val < b_val:
+                    a_unit.take_confusion_resist_damage(damage=b_val, dice_type=b_die.d_type)
+                else:
+                    pass
+            # ------------------------------------------
+
+            # 防御ダイス vs 回避ダイス --------------------
+            elif is_block(a_die) and is_evade(b_die):
+                a_dices.pop(0)
+                b_dices.pop(0)
+                if a_val > b_val:
+                    b_unit.take_confusion_resist_damage(damage=a_val, dice_type=a_die.d_type)
+                elif a_val < b_val:
+                    b_unit.heal_confusion_resist(amount=b_val)
+                else:
+                    pass
+            elif is_evade(a_die) and is_block(b_die):
+                a_dices.pop(0)
+                b_dices.pop(0)
+                if a_val > b_val:
+                    a_unit.heal_confusion_resist(amount=a_val)
+                elif a_val < b_val:
+                    a_unit.take_confusion_resist_damage(damage=b_val, dice_type=b_die.d_type)
+                else:
+                    pass
+            # ------------------------------------------
+
+            # 回避ダイス vs 回避ダイス --------------------
+            elif is_evade(a_die) and is_evade(b_die):
+                a_dices.pop(0)
+                b_dices.pop(0)
+            # ------------------------------------------
+
+            # 万一の無限ループ防止
             else:
-                defender.hp = max(0, defender.hp - 1)
+                a_dices.pop(0)
+                b_dices.pop(0)
+
+        # 片方のダイスが尽きたら、残った分は一方攻撃
+        if a_unit.is_dead() or b_unit.is_dead():
+            return
+
+        if a_dices and not b_dices:
+            self._apply_remaining_one_sided(a_unit, b_unit, a_dices)
+        elif not a_dices and b_dices:
+            self._apply_remaining_one_sided(b_unit, a_unit, b_dices)
+
+    def _apply_remaining_one_sided(self, attacker, defender, dices):
+        for die in dices:
+            if attacker.is_dead() or defender.is_dead():
+                break
+            if is_attack(die):
+                die_val = die.roll()
+                defender.take_damage(damage=die_val, dice_type=die.d_type)
+            else:
+                attacker.remaining_dices.append(die)
+
+    def _resolve_one_sided(self, vel_dice):
+        attacker = vel_dice.owner
+        defender = vel_dice.target.owner
+
+        for die in vel_dice.card.dice_list:
+            # 攻撃ダイスの場合
+            if is_attack(die):
+                defender.take_damage(damage=die.roll(), dice_type=die.d_type)
+            # 攻撃ダイス以外の場合、使用せずに保存
+            else:
+                attacker.remaining_dices.append(die)
 
     def debug_dump_units(self, units):
         print("=" * 40)

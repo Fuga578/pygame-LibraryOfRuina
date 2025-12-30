@@ -38,7 +38,7 @@ class AllyPlanState(BattleState):
         # 速度ダイス選択フェーズ
         if self.phase == AllyPlanPhase.SELECT_VELOCITY:
             # ダイス選択
-            if self._select_next_vel_dice():
+            if not self._select_next_vel_dice():
                 # 次の状態へ遷移
                 self._go_next_state()
                 return
@@ -60,13 +60,19 @@ class AllyPlanState(BattleState):
             playable_cards = [card for card in ally.deck.hand_cards if ally.can_play_card(card)]
             if len(playable_cards) <= 0:
                 # 次の速度ダイス判定
-                self._select_next_vel_dice()
+                if not self._select_next_vel_dice():
+                    # 次の状態へ遷移
+                    self._go_next_state()
+                    return
 
             # カードをランダムに選択
             card = random.choice(playable_cards)
             if not ally.pay_light(card.cost):
                 # 次の速度ダイス判定
-                self._select_next_vel_dice()
+                if not self._select_next_vel_dice():
+                    # 次の状態へ遷移
+                    self._go_next_state()
+                    return
             vel_dice.card = card
             self.scene.context.selected_card = card
 
@@ -103,7 +109,7 @@ class AllyPlanState(BattleState):
         """カード未設定ダイスを取得"""
         for vel_dice in self.scene.ally_slots:
             # チェック済みの場合
-            if not vel_dice.is_checked:
+            if vel_dice.is_checked:
                 continue
             vel_dice.is_checked = True
 
