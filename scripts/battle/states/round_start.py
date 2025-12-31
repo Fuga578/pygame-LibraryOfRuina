@@ -13,6 +13,11 @@ class RoundStartState(BattleState):
         print("Enter: RoundStartState")
         self.scene.state_name = "ROUND START STATE"
 
+        # 初期化
+        units = self.scene.allies + self.scene.enemies
+        for unit in units:
+            unit.init()
+
     def exit(self) -> None:
         print("Exit: RoundStartState")
 

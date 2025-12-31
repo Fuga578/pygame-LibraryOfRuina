@@ -23,6 +23,8 @@ class Game:
             "left_click_down": False,
             "left_click_up": False,
             "right_click": False,
+            "right_click_down": False,
+            "right_click_up": False,
             "esc": False,
             "enter": False,
             "w": False,
@@ -44,6 +46,9 @@ class Game:
         )
         self.text_font = self.fonts.get("dot", 18)
 
+        # マウス位置
+        self.mouse_pos = pygame.mouse.get_pos()
+
         # シーン
         self.scenes = SceneManager(self, SceneId.TITLE)
 
@@ -55,6 +60,8 @@ class Game:
 
         self.inputs["left_click_down"] = False
         self.inputs["left_click_up"] = False
+        self.inputs["right_click_down"] = False
+        self.inputs["right_click_up"] = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -107,17 +114,22 @@ class Game:
                     self.inputs["left_click_down"] = True
                 if event.button == 3:
                     self.inputs["right_click"] = True
+                    self.inputs["right_click_down"] = True
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
                     self.inputs["left_click"] = False
                     self.inputs["left_click_up"] = True
                 if event.button == 3:
                     self.inputs["right_click"] = False
+                    self.inputs["right_click_up"] = True
 
     def run(self):
         while True:
             # デルタタイム
             dt = self.clock.tick(Constants.FPS) / 1000.0
+
+            # マウス位置
+            self.mouse_pos = pygame.mouse.get_pos()
 
             # イベント処理
             self.handle_events()

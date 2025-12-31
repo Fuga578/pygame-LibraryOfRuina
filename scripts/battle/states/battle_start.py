@@ -18,6 +18,7 @@ class BattleStartState(BattleState):
         self.scene.state_name = "BATTLE START STATE"
 
     def exit(self) -> None:
+        self.scene._create_unit_panels()
         print("Exit: BattleStartState")
 
     def handle(self) -> None:

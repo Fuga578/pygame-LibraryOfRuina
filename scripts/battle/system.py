@@ -32,9 +32,6 @@ class BattleSystem:
     def start_round(self, units: list[Unit]):
         for unit in units:
 
-            # 初期化
-            unit.init()
-
             # 光回復
             unit.recover_light(amount=1)
 
@@ -112,7 +109,7 @@ class BattleSystem:
         # clash_infos からマッチしているペアを作成
         clash_pairs = set()
         for info in clash_infos:
-            if info.clash_type.name == "CLASH":
+            if self.is_clash(info):
                 attacker = info.attacker
                 defender = info.defender
                 pair = (min(id(attacker), id(defender)), max(id(attacker), id(defender)))
@@ -153,6 +150,12 @@ class BattleSystem:
 
             # 一方攻撃
             self._resolve_one_sided(vel_dice)
+
+    def is_clash(self, clash_info: ClashInfo):
+        return clash_info.clash_type == ClashType.CLASH
+
+    def is_one_sided(self, clash_info: ClashInfo):
+        return clash_info.clash_type == ClashType.ONE_SIDED
 
     def _resolve_clash_pair(self, a_vel_dice, b_vel_dice):
         a_unit = a_vel_dice.owner
@@ -270,10 +273,10 @@ class BattleSystem:
                 a_dices.pop(0)
                 b_dices.pop(0)
 
-        # 片方のダイスが尽きたら、残った分は一方攻撃
         if a_unit.is_dead() or b_unit.is_dead():
             return
 
+        # 片方のダイスが尽きたら、残った分は一方攻撃
         if a_dices and not b_dices:
             self._apply_remaining_one_sided(a_unit, b_unit, a_dices)
         elif not a_dices and b_dices:
