@@ -47,7 +47,6 @@ class AllyPlanState(BattleState):
         print("Exit: AllyPlanState")
 
     def handle(self) -> None:
-        print(self.phase)
         if self.scene.game.inputs["left_click_down"]:
             # 戦闘開始ボタン
             if self.scene.battle_start_button.is_hovered(self.scene.game.mouse_pos):
