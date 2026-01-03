@@ -53,10 +53,18 @@ class BattleScene(Scene):
         self.state.handle()
 
     def update(self, dt):
+        # 味方UI更新
+        for ally_ui in self.allies_ui:
+            ally_ui.update(dt)
+
+        # 敵UI更新
+        for enemy_ui in self.enemies_ui:
+            enemy_ui.update(dt)
+
         self.state.update(dt)
 
     def render(self, surface):
-        surface.fill((255, 255, 255))
+        surface.fill((200, 200, 200))
 
         # 現在の状態表示
         draw_text(
@@ -92,25 +100,27 @@ class BattleScene(Scene):
         self.allies_ui.clear()
         self.enemies_ui.clear()
 
+        w, h = 128, 128
+
         # 左：敵
-        start_x, start_y = 16, 60
-        w, h = 320, 180
-        gap = 10
+        enemy_pos_list = [(200, 300), (350, 150), (350, 450), (50, 150), (50, 450)]
         for i, unit in enumerate(self.enemies):
-            self.enemies_ui.append(UnitView(
-                game=self.game,
-                unit=unit,
-                size=(w, h),
-                pos=(start_x, start_y + i * (h + gap))
-            ))
+            self.enemies_ui.append(
+                UnitView(
+                    game=self.game,
+                    unit=unit,
+                    size=(w, h),
+                    pos=enemy_pos_list[i]
+                ),
+            )
 
         # 右：味方
         screen_w = self.game.screen.get_width()
-        start_x = screen_w - 16 - w
+        ally_pos_list = [(screen_w - 200 - w, 300), (screen_w - 350 - w, 150), (screen_w - 350 - w, 450), (screen_w - 50 - w, 150), (screen_w - 50 - w, 450)]
         for i, unit in enumerate(self.allies):
             self.allies_ui.append(UnitView(
                 game=self.game,
                 unit=unit,
                 size=(w, h),
-                pos=(start_x, start_y + i * (h + gap))
+                pos=ally_pos_list[i]
             ))

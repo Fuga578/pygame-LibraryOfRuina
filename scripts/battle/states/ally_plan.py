@@ -224,9 +224,9 @@ class AllyPlanState(BattleState):
                 self._draw_curved_arrow(
                     surface, point_a, point_b,
                     color=(255, 100, 100),
-                    width=4,
+                    width=8,
                     curvature=0.22,
-                    arrow_size=12,
+                    arrow_size=15,
                     bidirectional=True
                 )
             # 一方攻撃判定
@@ -234,9 +234,9 @@ class AllyPlanState(BattleState):
                 self._draw_curved_arrow(
                     surface, point_a, point_b,
                     color=(100, 100, 255),
-                    width=3,
+                    width=8,
                     curvature=0.22,
-                    arrow_size=10,
+                    arrow_size=15,
                     bidirectional=False
                 )
 

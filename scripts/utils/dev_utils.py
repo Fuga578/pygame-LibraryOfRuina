@@ -1,5 +1,7 @@
 from scripts.models.dice import Dice, DiceType
 from scripts.models.card import Card
+from scripts.models.unit import Unit
+from copy import deepcopy
 
 
 def create_sample_cards() -> list[Card]:
@@ -100,3 +102,24 @@ def create_sample_cards() -> list[Card]:
     card_list.append(card9)
 
     return card_list
+
+
+def create_sample_units(deck, num=3, is_ally=True):
+
+    unit_list = []
+
+    name_prefix = "ally" if is_ally else "enemy"
+    for i in range(num):
+        unit = Unit(
+            name=f"{name_prefix}/{i + 1}",
+            max_hp=30,
+            max_confusion_resist=10,
+            max_light=3,
+            min_speed=1,
+            max_speed=6,
+            deck=deepcopy(deck),
+            is_ally=is_ally,
+        )
+        unit_list.append(unit)
+
+    return unit_list

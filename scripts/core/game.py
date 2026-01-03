@@ -4,6 +4,8 @@ import pygame
 from scripts.core.constants import Constants
 from scripts.scene.base import SceneId, SceneManager
 from scripts.assets.fonts import FontManager
+from scripts.assets.animation import Animation
+from scripts.utils.img import load_image, load_images
 
 
 class Game:
@@ -45,6 +47,17 @@ class Game:
             }
         )
         self.text_font = self.fonts.get("dot", 18)
+
+        # アセット
+        self.assets = {
+            "ally/1/idle": Animation(images=load_images("assets/images/ally/1/idle"), duration=30, is_loop=True),
+            "ally/2/idle": Animation(images=load_images("assets/images/ally/2/idle"), duration=30, is_loop=True),
+            "ally/3/idle": Animation(images=load_images("assets/images/ally/3/idle"), duration=30, is_loop=True),
+            "enemy/1/idle": Animation(images=load_images("assets/images/enemy/1/idle"), duration=30, is_loop=True),
+            "enemy/2/idle": Animation(images=load_images("assets/images/enemy/2/idle"), duration=30, is_loop=True),
+            "enemy/3/idle": Animation(images=load_images("assets/images/enemy/3/idle"), duration=30, is_loop=True),
+            "vel_dice": load_image("assets/images/dice/vel_dice.png")
+        }
 
         # マウス位置
         self.mouse_pos = pygame.mouse.get_pos()
@@ -135,7 +148,7 @@ class Game:
             self.handle_events()
 
             # 背景の塗りつぶし
-            self.screen.fill(Constants.COLORS["white"])
+            self.screen.fill((200, 200, 200))
 
             # シーンの更新と描画
             self.scenes.handle()

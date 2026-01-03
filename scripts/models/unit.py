@@ -14,6 +14,10 @@ class ResistanceType(Enum):
     IMMUNE = 0.0        # 免疫
 
 
+class UnitStates(Enum):
+    IDLE = "idle"
+
+
 @dataclass
 class Unit:
     name: str       # ユニット名
@@ -30,6 +34,7 @@ class Unit:
     confusion_slash_resistance: ResistanceType = ResistanceType.NORMAL   # 斬撃耐性（混乱耐性）
     confusion_pierce_resistance: ResistanceType = ResistanceType.NORMAL  # 突き耐性（混乱耐性）
     confusion_blunt_resistance: ResistanceType = ResistanceType.NORMAL   # 打撃耐性（混乱耐性）
+    states: UnitStates = UnitStates.IDLE
 
     def __post_init__(self):
         self.hp = self.max_hp   # 現在のHP

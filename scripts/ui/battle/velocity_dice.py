@@ -15,15 +15,17 @@ class VelocityDiceView:
         self.size = list(size)
         self.pos = list(pos)
 
-        # 画像（代わり）
-        self.rect = pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
+        # 画像
+        self.img = pygame.transform.scale(self.game.assets.get("vel_dice"), self.size)
+        self.rect = self.img.get_rect(center=self.pos)
 
         # フォント
         self.font = self.game.fonts.get("dot", 16)
 
     def render(self, surface: pygame.Surface):
-        pygame.draw.rect(surface, (255, 255, 255), self.rect, border_radius=6)
-        pygame.draw.rect(surface, (0, 0, 0), self.rect, width=2, border_radius=6)
+        surface.blit(self.img, self.rect)
+        # pygame.draw.rect(surface, (255, 255, 255), self.rect, border_radius=6)
+        # pygame.draw.rect(surface, (0, 0, 0), self.rect, width=2, border_radius=6)
 
         text = "-" if self.velocity_dice.val is None else str(self.velocity_dice.val)
         surf = self.font.render(text, True, (0, 0, 0))
