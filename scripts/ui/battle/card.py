@@ -1,5 +1,6 @@
 import pygame
 from scripts.models.card import Card
+from scripts.models.dice import DiceType
 
 
 class CardView:
@@ -16,36 +17,52 @@ class CardView:
         self.size = list(size)
         self.pos = list(pos)
 
-        # 画像（代わり）
-        self.rect = pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
+        # 画像
+        self.img = self.game.card_art_manager.get(id=self.card.id, scale=2.0)
+        self.rect = self.img.get_rect(topleft=self.pos)
 
         # フォント
         self.font = self.game.fonts.get("dot", 20)
 
     def render(self, surface):
-        pygame.draw.rect(surface, (255, 255, 255), self.rect, border_radius=6)
-        pygame.draw.rect(surface, (0, 0, 0), self.rect, width=2, border_radius=6)
-
-        pad = 6
-        x, y = self.rect.x + pad, self.rect.y + pad
+        # カード
+        surface.blit(self.img, self.rect)
 
         # カード名
-        card_name_text = self.card.name
-        card_name_surf = self.font.render(card_name_text, True, (0, 0, 0))
-        surface.blit(card_name_surf, (x, y))
+        name_surf = self.font.render(self.card.name, True, (0, 0, 0))
+        surface.blit(name_surf, (self.rect.x + 50, self.rect.y + 13))
 
         # コスト
-        cost_text = f"コスト: {self.card.cost}"
-        cost_surf = self.font.render(cost_text, True, (0, 0, 0))
-        surface.blit(cost_surf, (self.rect.right - pad - cost_surf.get_width(), y))
+        cost_surf = self.font.render(f"{self.card.cost}", True, (0, 0, 0))
+        surface.blit(cost_surf, (self.rect.x + 19, self.rect.y + 13))
 
         # ダイスの内容
-        dy = y + 50
-        for d in self.card.dice_list:
-            line = f"{d.d_type.value}: {d.min_val}-{d.max_val}"
-            s = self.font.render(line, True, (0, 0, 0))
-            surface.blit(s, (x, dy))
-            dy += 30
+        for i, die in enumerate(self.card.dice_list):
+            icon = None
+            match die.d_type:
+                # 斬撃ダイス
+                case DiceType.SLASH:
+                    icon = self.game.assets["slash_icon"]
+                # 突きダイス
+                case DiceType.PIERCE:
+                    icon = self.game.assets["pierce_icon"]
+                # 打撃ダイス
+                case DiceType.BLUNT:
+                    icon = self.game.assets["blunt_icon"]
+                # 防御ダイス
+                case DiceType.BLOCK:
+                    icon = self.game.assets["block_icon"]
+                # 回避ダイス
+                case DiceType.EVADE:
+                    icon = self.game.assets["evade_icon"]
+
+            # アイコン画像
+            if icon:
+                surface.blit(icon, (self.rect.x + 10, self.rect.y + 155 + i * 30))
+
+            # ダイスの値の範囲
+            dice_val_surf = self.font.render(f"{die.min_val} - {die.max_val}", True, (0, 0, 0))
+            surface.blit(dice_val_surf, (self.rect.x + 50, self.rect.y + 160 + i * 30))
 
     def is_hovered(self, mouse_pos):
         return self.rect.collidepoint(mouse_pos)

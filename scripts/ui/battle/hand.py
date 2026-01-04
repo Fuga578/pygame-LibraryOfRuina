@@ -21,9 +21,9 @@ class HandView:
 
     def set_hand(self, cards):
         self.card_views.clear()
-        card_w = 250
+        card_w = 212
         pad = 8
-        card_w, card_h = card_w - pad*2, 180
+        card_w, card_h = card_w - pad*2, 200
         gap = 8
         x = self.rect.x + pad
         y = self.rect.y + pad

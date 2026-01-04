@@ -38,8 +38,8 @@ class AllyPlanState(BattleState):
         # 手札UI
         self.hand_view = HandView(
             self.scene.game,
-            size=(self.scene.game.screen.get_width() - 40, 220),
-            pos=(20, 420),
+            size=(self.scene.game.screen.get_width() - 40, 275),
+            pos=(20, 440),
         )
         self.hand_cards_owner = None  # 今表示している手札の持ち主(Unit)
 
@@ -194,7 +194,7 @@ class AllyPlanState(BattleState):
             else:
                 card = hovered_vel_dice_ui.velocity_dice.card
                 if card is not None:
-                    x, y = 20, 420
+                    x, y = 20, 20
                     w, h = 320, 160
                     CardView(self.scene.game, card, (w, h), (x, y)).render(surface)
 

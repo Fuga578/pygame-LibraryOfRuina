@@ -103,7 +103,7 @@ class BattleScene(Scene):
         w, h = 128, 128
 
         # 左：敵
-        enemy_pos_list = [(200, 300), (350, 150), (350, 450), (50, 150), (50, 450)]
+        enemy_pos_list = [(200, 200), (350, 50), (350, 350), (50, 50), (50, 350)]
         for i, unit in enumerate(self.enemies):
             self.enemies_ui.append(
                 UnitView(
@@ -116,7 +116,7 @@ class BattleScene(Scene):
 
         # 右：味方
         screen_w = self.game.screen.get_width()
-        ally_pos_list = [(screen_w - 200 - w, 300), (screen_w - 350 - w, 150), (screen_w - 350 - w, 450), (screen_w - 50 - w, 150), (screen_w - 50 - w, 450)]
+        ally_pos_list = [(screen_w - 200 - w, 200), (screen_w - 350 - w, 50), (screen_w - 350 - w, 350), (screen_w - 50 - w, 50), (screen_w - 50 - w, 350)]
         for i, unit in enumerate(self.allies):
             self.allies_ui.append(UnitView(
                 game=self.game,

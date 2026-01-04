@@ -4,6 +4,7 @@ from scripts.models.dice import Dice
 
 @dataclass
 class Card:
+    id: str     # ID
     name: str   # カード名
     cost: int   # コスト
     dice_list: list[Dice]   # ダイスリスト（回避や斬撃）

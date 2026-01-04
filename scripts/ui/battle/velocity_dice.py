@@ -24,8 +24,6 @@ class VelocityDiceView:
 
     def render(self, surface: pygame.Surface):
         surface.blit(self.img, self.rect)
-        # pygame.draw.rect(surface, (255, 255, 255), self.rect, border_radius=6)
-        # pygame.draw.rect(surface, (0, 0, 0), self.rect, width=2, border_radius=6)
 
         text = "-" if self.velocity_dice.val is None else str(self.velocity_dice.val)
         surf = self.font.render(text, True, (0, 0, 0))

@@ -5,6 +5,7 @@ from scripts.core.constants import Constants
 from scripts.scene.base import SceneId, SceneManager
 from scripts.assets.fonts import FontManager
 from scripts.assets.animation import Animation
+from scripts.assets.card_art_manager import CardArtManager
 from scripts.utils.img import load_image, load_images
 
 
@@ -48,6 +49,11 @@ class Game:
         )
         self.text_font = self.fonts.get("dot", 18)
 
+        # カード管理
+        self.card_art_manager = CardArtManager(
+            base_dir="assets/images/card",
+        )
+
         # アセット
         self.assets = {
             "ally/1/idle": Animation(images=load_images("assets/images/ally/1/idle"), duration=30, is_loop=True),
@@ -56,7 +62,12 @@ class Game:
             "enemy/1/idle": Animation(images=load_images("assets/images/enemy/1/idle"), duration=30, is_loop=True),
             "enemy/2/idle": Animation(images=load_images("assets/images/enemy/2/idle"), duration=30, is_loop=True),
             "enemy/3/idle": Animation(images=load_images("assets/images/enemy/3/idle"), duration=30, is_loop=True),
-            "vel_dice": load_image("assets/images/dice/vel_dice.png")
+            "vel_dice": load_image("assets/images/dice/vel_dice.png"),
+            "slash_icon": load_image("assets/images/dice/slash_icon.png"),
+            "pierce_icon": load_image("assets/images/dice/pierce_icon.png"),
+            "blunt_icon": load_image("assets/images/dice/blunt_icon.png"),
+            "block_icon": load_image("assets/images/dice/block_icon.png"),
+            "evade_icon": load_image("assets/images/dice/evade_icon.png"),
         }
 
         # マウス位置

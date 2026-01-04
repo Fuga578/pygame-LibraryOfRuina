@@ -27,7 +27,7 @@ class UnitView:
                 game=game,
                 velocity_dice=vel_dice,
                 size=(32, 32),
-                pos=(self.rect.centerx - i * 32, self.rect.top - 32)
+                pos=(self.rect.centerx - i * 32, self.rect.top - 8)
             )
             for i, vel_dice in enumerate(self.unit.velocity_dice_list)
         ]
@@ -67,7 +67,7 @@ class UnitView:
         gap = 10
         n = self.unit.max_light
         cx = self.rect.centerx
-        y = self.rect.y - 55
+        y = self.rect.y - 32
 
         # 全体の左端（中心合わせ）
         start_x = cx - (n - 1) * gap / 2
@@ -76,9 +76,9 @@ class UnitView:
             x = int(round(start_x + i * gap))
 
             if i >= self.unit.light:
-                color = (255, 255, 0)  # 空
+                color = (255, 255, 0)  # 点灯
             else:
-                color = (255, 255, 100)  # 点灯
+                color = (255, 255, 100)  # 空
 
             pygame.draw.circle(surface, color, (x, y), 3)
 
