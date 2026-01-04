@@ -84,25 +84,75 @@ class BattleSystem:
             vel_dice.card = card
 
             # ターゲットをランダムに選択
-            target_candidates = [vd for vd in ally_slots]
+            target_candidates = [vel_dice for vel_dice in ally_slots]
             target = random.choice(target_candidates)
             vel_dice.target = target
 
     def evaluate_clashes(self, all_slots: list) -> list[ClashInfo]:
         """マッチ/一方攻撃を判定して返す"""
-        infos = []
-        for vel_dice in all_slots:
 
-            # ターゲットなしの場合
-            if vel_dice.card is None or vel_dice.target is None:
+        infos: list[ClashInfo] = []
+
+        # 有効な速度ダイス
+        active = [vel_dice for vel_dice in all_slots
+                  if vel_dice.card is not None and vel_dice.target is not None and vel_dice.val is not None]
+
+        # key: 狙われた側の速度ダイス, val: 狙う側の速度ダイス
+        incoming: dict = {}
+        for a in active:
+            incoming.setdefault(a.target, []).append(a)
+
+        # 最終的な対戦相手dict
+        final_opponent: dict = {}  # vel_dice -> vel_dice
+        used = set()  # 既にマッチに採用された vel_dice
+
+        def order_key(vel_dice):
+            # 選択順がない(敵など)場合は0
+            return (getattr(vel_dice, "select_order", 0), vel_dice.val)
+
+        # 狙われた側の速度ダイスごとに、誰とマッチするかを決める
+        for defender, attackers in incoming.items():
+            # 既にマッチ済みの場合
+            if defender in used:
+                continue
+            if defender.card is None or defender.val is None:
                 continue
 
-            # 相互に狙ってたらマッチ
-            target = vel_dice.target
-            if target.card is not None and target.target is vel_dice:
-                infos.append(ClashInfo(vel_dice, target, ClashType.CLASH))
+            # 既に使われてない攻撃者だけ
+            cand = [a for a in attackers if a not in used and a.val is not None]
+
+            chosen = None
+
+            # マッチ奪い判定：defender より速度が高い attacker がいれば割り込み可能（味方のみ）
+            interceptors = [a for a in cand if a.val > defender.val and a.owner.is_ally]
+            if interceptors:
+                # 最後に選択したもの優先
+                chosen = max(interceptors, key=order_key)
+
+            # マッチ奪いが無い場合のみ、相互狙いならマッチ判定
+            if chosen is None:
+                mutuals = [a for a in cand if defender.target is a]
+                if mutuals:
+                    chosen = max(mutuals, key=order_key)
+
+            # マッチ確定
+            if chosen is not None:
+                used.add(defender)
+                used.add(chosen)
+                final_opponent[chosen] = defender
+                final_opponent[defender] = chosen
+
+        # マッチ判定を算出
+        for a in active:
+            d = a.target
+            # マッチに参加している速度ダイスはマッチ処理
+            if a in final_opponent:
+                opp = final_opponent[a]
+                infos.append(ClashInfo(a, opp, ClashType.CLASH))
             else:
-                infos.append(ClashInfo(vel_dice, target, ClashType.ONE_SIDED))
+                # マッチに参加してない速度ダイスは一方攻撃（元targetへ）
+                infos.append(ClashInfo(a, d, ClashType.ONE_SIDED))
+
         return infos
 
     def is_clash(self, clash_info: ClashInfo):
@@ -125,12 +175,12 @@ class BattleSystem:
             print(f"  Hand({len(hand_names)}): {hand_names}")
 
             # 速度ダイス
-            for i, vd in enumerate(u.velocity_dice_list):
-                card_name = vd.card.name if vd.card else None
-                target_name = vd.target.owner.name if vd.target else None
+            for i, vel_dice in enumerate(u.velocity_dice_list):
+                card_name = vel_dice.card.name if vel_dice.card else None
+                target_name = vel_dice.target.owner.name if vel_dice.target else None
                 print(
                     f"  VelDice[{i}] "
-                    f"val={vd.val}, "
+                    f"val={vel_dice.val}, "
                     f"card={card_name}, "
                     f"target={target_name}"
                 )

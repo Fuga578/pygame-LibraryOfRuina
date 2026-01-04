@@ -43,6 +43,9 @@ class AllyPlanState(BattleState):
         )
         self.hand_cards_owner = None  # 今表示している手札の持ち主(Unit)
 
+        # 速度ダイス設定カウント
+        self.plan_counter = 0
+
     def exit(self) -> None:
         print("Exit: AllyPlanState")
 
@@ -129,6 +132,10 @@ class AllyPlanState(BattleState):
                     vel_dice.target = clicked_vel
                     self.scene.context.selected_target = clicked_vel
 
+                    # 選択順設定
+                    vel_dice.select_order = self.plan_counter
+                    self.plan_counter += 1
+
                     # マッチ判定更新
                     self.scene.clash_infos = self.scene.system.evaluate_clashes(self.scene.all_slots)
 
@@ -205,7 +212,7 @@ class AllyPlanState(BattleState):
                     x, y = 20, 20
 
                 CardView(self.scene.game, card, (x, y)).render(surface)
-                
+
         # マッチ/一方攻撃の矢印を描画
         processed_clash_pairs = set()
         for info in self.scene.clash_infos:
@@ -295,6 +302,9 @@ class AllyPlanState(BattleState):
 
         vel_dice.card = None
         vel_dice.target = None
+
+        # 設定順初期化
+        vel_dice.select_order = 0
 
     def _find_vel_ui(self, vel_dice):
         all_units_ui = self.scene.allies_ui + self.scene.enemies_ui

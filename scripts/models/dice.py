@@ -54,7 +54,7 @@ class Dice:
         return self.val
 
 
-@dataclass
+@dataclass(eq=False)
 class VelocityDice:
     min_val: int
     max_val: int
@@ -63,12 +63,14 @@ class VelocityDice:
     target: "VelocityDice" = None
     card: "Card" = None
     is_checked: bool = False
+    select_order: int = 0
 
     def init(self):
         self.val = None
         self.target = None
         self.card = None
         self.is_checked = False
+        self.select_order = 0
 
     def roll(self):
         self.val = random.randint(self.min_val, self.max_val)
