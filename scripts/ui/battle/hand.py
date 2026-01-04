@@ -29,7 +29,7 @@ class HandView:
         y = self.rect.y + pad
         for i, c in enumerate(cards):
             r = pygame.Rect(x + i * (card_w + gap), y, card_w, card_h)
-            self.card_views.append(CardView(self.game, c, (card_w, 200), (r.x, r.y)))
+            self.card_views.append(CardView(self.game, c, (r.x, r.y)))
 
     def render(self, surface):
         pygame.draw.rect(surface, (240, 240, 240), self.rect, border_radius=10)

@@ -167,37 +167,45 @@ class AllyPlanState(BattleState):
         pass
 
     def render(self, surface) -> None:
-        hovered_vel_dice_ui = self._get_hovered_vel_dice_ui(self.scene.game.mouse_pos)
+        # ホバー情報
+        hovered_ally_vel = None
+        hovered_card = None
 
-        # 表示したい手札の持ち主を決める
+        hovered_vel_dice_ui = self._get_hovered_vel_dice_ui(self.scene.game.mouse_pos)
+        if hovered_vel_dice_ui:
+            vel = hovered_vel_dice_ui.velocity_dice
+            if vel.owner.is_ally:
+                hovered_ally_vel = vel
+                hovered_card = vel.card  # None か Card
+
+        # 手札の持ち主（固定があれば固定優先）
         hand_owner = None
-        # 手札固定時、固定されている手札の持ち主
         if self.pinned_hand and self.pinned_vel:
             hand_owner = self.pinned_vel.owner
-        # 速度ダイスホバー時、ホバーしている手札の持ち主
-        elif hovered_vel_dice_ui and hovered_vel_dice_ui.velocity_dice.owner.is_ally:
-            hand_owner = hovered_vel_dice_ui.velocity_dice.owner
+        else:
+            # ホバー中にカードが「未設定」のときだけ手札を出す
+            if hovered_ally_vel and (hovered_card is None):
+                hand_owner = hovered_ally_vel.owner
 
         # 味方手札表示
         if hand_owner is not None:
             self.hand_view.set_hand(hand_owner.deck.hand_cards)
             self.hand_view.render(surface)
 
-        # ホバーした速度ダイスのカード/デッキ表示
-        hovered_vel_dice_ui = self._get_hovered_vel_dice_ui(self.scene.game.mouse_pos)
+        # ホバーした速度ダイスのカード表示
         if hovered_vel_dice_ui:
-            owner = hovered_vel_dice_ui.velocity_dice.owner
-            # 味方の速度ダイスの場合
-            if owner.is_ally:
-                pass
-            # 敵の速度ダイスの場合
-            else:
-                card = hovered_vel_dice_ui.velocity_dice.card
-                if card is not None:
-                    x, y = 20, 20
-                    w, h = 320, 160
-                    CardView(self.scene.game, card, (w, h), (x, y)).render(surface)
+            vel = hovered_vel_dice_ui.velocity_dice
+            card = vel.card
 
+            if card is not None:
+                owner = vel.owner
+                if owner.is_ally:
+                    x, y = surface.get_width() - 20 - 200, 20
+                else:
+                    x, y = 20, 20
+
+                CardView(self.scene.game, card, (x, y)).render(surface)
+                
         # マッチ/一方攻撃の矢印を描画
         processed_clash_pairs = set()
         for info in self.scene.clash_infos:

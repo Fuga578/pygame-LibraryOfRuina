@@ -1,4 +1,3 @@
-import pygame
 from scripts.models.card import Card
 from scripts.models.dice import DiceType
 
@@ -9,12 +8,10 @@ class CardView:
         self,
         game: "Game",
         card: Card,
-        size: list[int, int] | tuple[int, int],
         pos: list[int, int] | tuple[int, int],
     ):
         self.game = game
         self.card = card
-        self.size = list(size)
         self.pos = list(pos)
 
         # 画像
