@@ -1,7 +1,25 @@
 from dataclasses import dataclass
+from enum import Enum, auto
 from scripts.battle.states.base import BattleState
-from scripts.models.dice import VelocityDice, is_attack, is_block, is_evade
+from scripts.models.dice import VelocityDice, Dice, is_attack, is_block, is_evade
 from scripts.battle.system import ClashType
+from scripts.models.unit import DamageType, HealType
+
+
+class ResolvePhase(Enum):
+    ROLL = auto()           # ダイスのロールフェーズ
+    APPLY = auto()          # ダメージ適用フェーズ
+
+
+@dataclass
+class StepResult:
+    """1ステップ結果保持クラス"""
+    clash_type: ClashType
+    is_use_a_index: bool | None
+    a_vel_dice: VelocityDice | None = None
+    b_vel_dice: VelocityDice | None = None
+    a_die: Dice | None = None
+    b_die: Dice | None = None
 
 
 @dataclass
@@ -22,6 +40,9 @@ class ResolveState(BattleState):
     def enter(self) -> None:
         print("Enter: ResolveState")
         self.scene.state_name = "RESOLVE STATE"
+
+        self.phase = ResolvePhase.ROLL    # 初期フェーズ
+        self.step_result: StepResult | None = None  # 1ステップの結果保持用
 
         # 一方攻撃/マッチの判定更新
         self.scene.clash_infos = self.scene.system.evaluate_clashes(self.scene.all_slots)
@@ -48,25 +69,30 @@ class ResolveState(BattleState):
             # 処理するペア（マッチ/一方攻撃）
             pair = self.queue[self.queue_index]
 
-            # マッチの場合
-            if pair.kind == ClashType.CLASH:
-                done = self._step_clash(pair)
-            # 一方攻撃の場合
-            else:
-                attacker_vel_dice = pair.a_vel_dice
-                defender_vel_dice = pair.b_vel_dice
-                done = self._step_one_sided(attacker_vel_dice, defender_vel_dice, True)
+            # ダイスロールで値を確定するフェーズ --
+            if self.phase == ResolvePhase.ROLL:
+                done, res = self._roll_one_step(pair)  # 1ダイスだけ処理を進める
 
-            # 現在のペアの処理が終了した場合
-            if done:
-                self.queue_index += 1
-                self.a_index = 0
-                self.b_index = 0
-
-                # 全てのマッチ/一方攻撃が終了した場合、次の状態へ遷移
-                if self.queue_index >= len(self.queue):
-                    self._go_next_state()
+                # 現在のペアが終了した場合、次のペアへ
+                if done:
+                    self.queue_index += 1
+                    self.a_index = 0
+                    self.b_index = 0
                     return
+
+                # 次のフェーズへ
+                self.step_result = res
+                self.phase = ResolvePhase.APPLY
+                return
+            # ---------------------------------
+
+            # ダメージ適用フェーズ ---------------
+            if self.phase == ResolvePhase.APPLY:
+                self._apply_one_step(self.step_result)  # 1ダイス分だけダメージ判定
+                self.step_result = None
+                self.phase = ResolvePhase.ROLL
+                return
+            # ---------------------------------
 
     def update(self, dt: float) -> None:
         pass
@@ -114,7 +140,19 @@ class ResolveState(BattleState):
 
         return queue
 
-    def _step_clash(self, pair: ResolverPair) -> bool:
+    def _roll_one_step(self, pair) -> tuple[bool, StepResult | None]:
+        """1ダイスだけロール処理"""
+
+        # マッチの場合
+        if pair.kind == ClashType.CLASH:
+            return self._step_clash_roll(pair)
+        # 一方攻撃の場合
+        else:
+            attacker_vel_dice = pair.a_vel_dice
+            defender_vel_dice = pair.b_vel_dice
+            return self._step_one_sided_roll(attacker_vel_dice, defender_vel_dice, True)
+
+    def _step_clash_roll(self, pair: ResolverPair) -> tuple[bool, StepResult | None]:
         """マッチ判定1ダイス分"""
         # 速度ダイス
         a_vel_dice = pair.a_vel_dice
@@ -122,12 +160,13 @@ class ResolveState(BattleState):
 
         # どちらもダイス切れの場合、終了
         if self.a_index >= len(a_vel_dice.card.dice_list) and self.b_index >= len(b_vel_dice.card.dice_list):
-            return True
+            return True, None
+        # どちらか一方のみがダイス切れの場合、一方攻撃
         else:
             if self.a_index >= len(a_vel_dice.card.dice_list):
-                return self._step_one_sided(attacker_vel_dice=b_vel_dice, defender_vel_dice=a_vel_dice, is_use_a_index=False)
+                return self._step_one_sided_roll(attacker_vel_dice=b_vel_dice, defender_vel_dice=a_vel_dice, is_use_a_index=False)
             elif self.b_index >= len(b_vel_dice.card.dice_list):
-                return self._step_one_sided(attacker_vel_dice=a_vel_dice, defender_vel_dice=b_vel_dice, is_use_a_index=True)
+                return self._step_one_sided_roll(attacker_vel_dice=a_vel_dice, defender_vel_dice=b_vel_dice, is_use_a_index=True)
 
         # ユニット
         a_unit = a_vel_dice.owner
@@ -135,16 +174,17 @@ class ResolveState(BattleState):
 
         # どちらかが死亡している場合、終了
         if a_unit.is_dead() or b_unit.is_dead():
-            return True
+            return True, None
 
         # どちらも混乱状態の場合、終了
         if a_unit.is_confused() and b_unit.is_confused():
-            return True
+            return True, None
+        # どちらか一方のみが混乱状態の場合、一方攻撃
         else:
             if a_unit.is_confused():
-                return self._step_one_sided(attacker_vel_dice=b_vel_dice, defender_vel_dice=a_vel_dice, is_use_a_index=False)
+                return self._step_one_sided_roll(attacker_vel_dice=b_vel_dice, defender_vel_dice=a_vel_dice, is_use_a_index=False)
             elif b_unit.is_confused():
-                return self._step_one_sided(attacker_vel_dice=a_vel_dice, defender_vel_dice=b_vel_dice, is_use_a_index=True)
+                return self._step_one_sided_roll(attacker_vel_dice=a_vel_dice, defender_vel_dice=b_vel_dice, is_use_a_index=True)
 
         # ダイス一覧
         a_dices = list(a_vel_dice.card.dice_list)
@@ -154,18 +194,97 @@ class ResolveState(BattleState):
         a_die = a_dices[self.a_index]
         b_die = b_dices[self.b_index]
 
-        # ダイスの値
-        a_val = a_die.roll()
-        b_val = b_die.roll()
+        # ダイスロール
+        a_die.roll()
+        b_die.roll()
+
+        res = StepResult(
+            clash_type=ClashType.CLASH,
+            is_use_a_index=None,
+            a_vel_dice=a_vel_dice,
+            b_vel_dice=b_vel_dice,
+            a_die=a_die,
+            b_die=b_die,
+        )
+
+        return False, res
+
+    def _step_one_sided_roll(self, attacker_vel_dice, defender_vel_dice, is_use_a_index) -> tuple[bool, StepResult | None]:
+        """一方攻撃判定1ダイス分"""
+        idx = self.a_index if is_use_a_index else self.b_index
+
+        # ダイス切れなら終了
+        if idx >= len(attacker_vel_dice.card.dice_list):
+            return True, None
+
+        attacker = attacker_vel_dice.owner
+        defender = defender_vel_dice.owner
+
+        # 攻撃者が混乱している場合は終了
+        if attacker.is_confused():
+            return True, None
+
+        # どちらかが死亡していた場合は終了
+        if attacker.is_dead() or defender.is_dead():
+            return True, None
+
+        # 攻撃者のダイス
+        a_dices = list(attacker_vel_dice.card.dice_list)
+        a_die = a_dices[idx]
+
+        # TODO: 攻撃ダイスの場合はダイスロール
+        a_die.roll()
+        # TODO: 攻撃ダイス以外の場合は使用せずに保持
+
+        res = StepResult(
+            clash_type=ClashType.ONE_SIDED,
+            is_use_a_index=is_use_a_index,
+            a_vel_dice=attacker_vel_dice,
+            b_vel_dice=defender_vel_dice,
+            a_die=a_die,
+            b_die=None,
+        )
+
+        return False, res
+
+    def _apply_one_step(self, res: StepResult | None):
+        if res is None:
+            return
+
+        # マッチ
+        if res.clash_type == ClashType.CLASH:
+            self._step_clash_apply(res)
+        # 一方攻撃
+        else:
+            self._step_one_sided_apply(res)
+
+    def _step_clash_apply(self, res: StepResult | None):
+        if res is None:
+            return
+
+        a_unit = res.a_vel_dice.owner
+        b_unit = res.b_vel_dice.owner
+        a_die = res.a_die
+        b_die = res.b_die
+        a_val = a_die.val
+        b_val = b_die.val
 
         # 攻撃ダイス vs 攻撃ダイス --------------------
         if is_attack(a_die) and is_attack(b_die):
             self.a_index += 1
             self.b_index += 1
             if a_val > b_val:
-                b_unit.take_damage(damage=a_val, dice_type=a_die.d_type)
+                hp_damage, confusion_damage = b_unit.take_damage(damage=a_val, dice_type=a_die.d_type)
+
+                unit_ui = self.scene.unit_ui_id_map[id(b_unit)]
+                unit_ui.on_damage(hp_damage, DamageType.HP)
+                unit_ui.on_damage(confusion_damage, DamageType.CONFUSION)
             elif a_val < b_val:
-                a_unit.take_damage(damage=b_val, dice_type=b_die.d_type)
+                hp_damage, confusion_damage = a_unit.take_damage(damage=b_val, dice_type=b_die.d_type)
+
+                unit_ui = self.scene.unit_ui_id_map[id(a_unit)]
+                unit_ui.on_damage(hp_damage, DamageType.HP)
+                unit_ui.on_damage(confusion_damage, DamageType.CONFUSION)
             else:
                 pass
         # ------------------------------------------
@@ -175,18 +294,32 @@ class ResolveState(BattleState):
             self.a_index += 1
             self.b_index += 1
             if a_val > b_val:
-                b_unit.take_damage(damage=a_val - b_val, dice_type=a_die.d_type)
+                hp_damage, confusion_damage = b_unit.take_damage(damage=a_val - b_val, dice_type=a_die.d_type)
+
+                unit_ui = self.scene.unit_ui_id_map[id(b_unit)]
+                unit_ui.on_damage(hp_damage, DamageType.HP)
+                unit_ui.on_damage(confusion_damage, DamageType.CONFUSION)
             elif a_val < b_val:
-                a_unit.take_confusion_resist_damage(damage=b_val, dice_type=b_die.d_type)
+                confusion_damage = a_unit.take_confusion_resist_damage(damage=b_val, dice_type=b_die.d_type)
+
+                unit_ui = self.scene.unit_ui_id_map[id(a_unit)]
+                unit_ui.on_damage(confusion_damage, DamageType.CONFUSION)
             else:
                 pass
         elif is_block(a_die) and is_attack(b_die):
             self.a_index += 1
             self.b_index += 1
             if a_val > b_val:
-                b_unit.take_confusion_resist_damage(damage=a_val, dice_type=a_die.d_type)
+                confusion_damage = b_unit.take_confusion_resist_damage(damage=a_val, dice_type=a_die.d_type)
+
+                unit_ui = self.scene.unit_ui_id_map[id(b_unit)]
+                unit_ui.on_damage(confusion_damage, DamageType.CONFUSION)
             elif a_val < b_val:
-                a_unit.take_damage(damage=b_val - a_val, dice_type=b_die.d_type)
+                hp_damage, confusion_damage = a_unit.take_damage(damage=b_val - a_val, dice_type=b_die.d_type)
+
+                unit_ui = self.scene.unit_ui_id_map[id(a_unit)]
+                unit_ui.on_damage(hp_damage, DamageType.HP)
+                unit_ui.on_damage(confusion_damage, DamageType.CONFUSION)
             else:
                 pass
         # ------------------------------------------
@@ -196,22 +329,38 @@ class ResolveState(BattleState):
             if a_val > b_val:
                 self.a_index += 1
                 self.b_index += 1
-                b_unit.take_damage(damage=a_val, dice_type=a_die.d_type)
+                hp_damage, confusion_damage = b_unit.take_damage(damage=a_val, dice_type=a_die.d_type)
+
+                unit_ui = self.scene.unit_ui_id_map[id(b_unit)]
+                unit_ui.on_damage(hp_damage, DamageType.HP)
+                unit_ui.on_damage(confusion_damage, DamageType.CONFUSION)
             elif a_val < b_val:
                 self.a_index += 1
                 b_unit.heal_confusion_resist(amount=b_val)
+
+                unit_ui = self.scene.unit_ui_id_map[id(b_unit)]
+                unit_ui.on_heal(b_val, HealType.CONFUSION)
             else:
-                pass
+                self.a_index += 1
+                self.b_index += 1
         elif is_evade(a_die) and is_attack(b_die):
             if a_val > b_val:
                 self.b_index += 1
                 a_unit.heal_confusion_resist(amount=a_val)
+
+                unit_ui = self.scene.unit_ui_id_map[id(a_unit)]
+                unit_ui.on_heal(a_val, HealType.CONFUSION)
             elif a_val < b_val:
                 self.a_index += 1
                 self.b_index += 1
-                a_unit.take_damage(damage=b_val, dice_type=b_die.d_type)
+                hp_damage, confusion_damage = a_unit.take_damage(damage=b_val, dice_type=b_die.d_type)
+
+                unit_ui = self.scene.unit_ui_id_map[id(a_unit)]
+                unit_ui.on_damage(hp_damage, DamageType.HP)
+                unit_ui.on_damage(confusion_damage, DamageType.CONFUSION)
             else:
-                pass
+                self.a_index += 1
+                self.b_index += 1
         # ------------------------------------------
 
         # 防御ダイス vs 防御ダイス --------------------
@@ -219,9 +368,15 @@ class ResolveState(BattleState):
             self.a_index += 1
             self.b_index += 1
             if a_val > b_val:
-                b_unit.take_confusion_resist_damage(damage=a_val, dice_type=a_die.d_type)
+                confusion_damage = b_unit.take_confusion_resist_damage(damage=a_val, dice_type=a_die.d_type)
+
+                unit_ui = self.scene.unit_ui_id_map[id(b_unit)]
+                unit_ui.on_damage(confusion_damage, DamageType.CONFUSION)
             elif a_val < b_val:
-                a_unit.take_confusion_resist_damage(damage=b_val, dice_type=b_die.d_type)
+                confusion_damage = a_unit.take_confusion_resist_damage(damage=b_val, dice_type=b_die.d_type)
+
+                unit_ui = self.scene.unit_ui_id_map[id(a_unit)]
+                unit_ui.on_damage(confusion_damage, DamageType.CONFUSION)
             else:
                 pass
         # ------------------------------------------
@@ -231,9 +386,15 @@ class ResolveState(BattleState):
             self.a_index += 1
             self.b_index += 1
             if a_val > b_val:
-                b_unit.take_confusion_resist_damage(damage=a_val, dice_type=a_die.d_type)
+                confusion_damage = b_unit.take_confusion_resist_damage(damage=a_val, dice_type=a_die.d_type)
+
+                unit_ui = self.scene.unit_ui_id_map[id(b_unit)]
+                unit_ui.on_damage(confusion_damage, DamageType.CONFUSION)
             elif a_val < b_val:
                 b_unit.heal_confusion_resist(amount=b_val)
+
+                unit_ui = self.scene.unit_ui_id_map[id(b_unit)]
+                unit_ui.on_heal(b_val, HealType.CONFUSION)
             else:
                 pass
         elif is_evade(a_die) and is_block(b_die):
@@ -241,8 +402,14 @@ class ResolveState(BattleState):
             self.b_index += 1
             if a_val > b_val:
                 a_unit.heal_confusion_resist(amount=a_val)
+
+                unit_ui = self.scene.unit_ui_id_map[id(a_unit)]
+                unit_ui.on_heal(a_val, HealType.CONFUSION)
             elif a_val < b_val:
-                a_unit.take_confusion_resist_damage(damage=b_val, dice_type=b_die.d_type)
+                confusion_damage = a_unit.take_confusion_resist_damage(damage=b_val, dice_type=b_die.d_type)
+
+                unit_ui = self.scene.unit_ui_id_map[id(a_unit)]
+                unit_ui.on_damage(confusion_damage, DamageType.CONFUSION)
             else:
                 pass
         # ------------------------------------------
@@ -255,38 +422,22 @@ class ResolveState(BattleState):
 
         return False
 
-    def _step_one_sided(self, attacker_vel_dice, defender_vel_dice, is_use_a_index) -> bool:
-        """一方攻撃判定1ダイス分"""
-        idx = self.a_index if is_use_a_index else self.b_index
+    def _step_one_sided_apply(self, res: StepResult | None):
+        if res is None:
+            return
 
-        # ダイス切れなら終了
-        if idx >= len(attacker_vel_dice.card.dice_list):
-            return True
+        a_unit = res.a_vel_dice.owner
+        b_unit = res.b_vel_dice.owner
+        a_die = res.a_die
 
-        attacker = attacker_vel_dice.owner
-        defender = defender_vel_dice.owner
-
-        # 攻撃者が混乱している場合は終了
-        if attacker.is_confused():
-            return True
-
-        # どちらかが死亡していた場合は終了
-        if attacker.is_dead() or defender.is_dead():
-            return True
-
-        # 攻撃者のダイス
-        a_dices = list(attacker_vel_dice.card.dice_list)
-        a_die = a_dices[idx]
-        if is_use_a_index:
+        if res.is_use_a_index:
             self.a_index += 1
         else:
             self.b_index += 1
 
         # 攻撃ダイスの場合
         if is_attack(a_die):
-            defender.take_damage(damage=a_die.roll(), dice_type=a_die.d_type)
+            b_unit.take_damage(damage=a_die.val, dice_type=a_die.d_type)
         # 攻撃ダイス以外の場合、使用せずに保存
         else:
-            attacker.remaining_dices.append(a_die)
-
-        return idx + 1 >= len(attacker_vel_dice.card.dice_list)
+            a_unit.remaining_dices.append(a_die)

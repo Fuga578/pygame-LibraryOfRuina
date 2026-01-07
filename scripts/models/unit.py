@@ -5,6 +5,16 @@ from scripts.models.card import Card
 from scripts.models.dice import VelocityDice, DiceType
 
 
+class DamageType(Enum):
+    HP = auto()
+    CONFUSION = auto()
+
+
+class HealType(Enum):
+    HP = auto()
+    CONFUSION = auto()
+
+
 class ResistanceType(Enum):
     VULNERABLE = 2.0    # 脆弱
     WEAK = 1.5          # 弱点
@@ -89,25 +99,28 @@ class Unit:
         self.light -= cost
         return True
 
-    def take_damage(self, damage, dice_type: DiceType) -> None:
-        self.take_hp_damage(damage, dice_type)
-        self.take_confusion_resist_damage(damage, dice_type)
+    def take_damage(self, damage, dice_type: DiceType) -> tuple[int, int]:
+        hp_damage = self.take_hp_damage(damage, dice_type)
+        confusion_damage = self.take_confusion_resist_damage(damage, dice_type)
+        return hp_damage, confusion_damage
 
-    def take_hp_damage(self, damage: int, dice_type: DiceType) -> None:
+    def take_hp_damage(self, damage: int, dice_type: DiceType) -> int:
         """HPダメージを受ける"""
         resistance = self.hp_resistance.get(dice_type.name)
         if resistance is None:
             resistance = 1.0
         dmg = int(damage * resistance)
         self.hp = max(0, self.hp - dmg)
+        return dmg
 
-    def take_confusion_resist_damage(self, damage: int, dice_type: DiceType) -> None:
+    def take_confusion_resist_damage(self, damage: int, dice_type: DiceType) -> int:
         """混乱抵抗値ダメージを受ける"""
         resistance = self.confusion_resistance.get(dice_type.name)
         if resistance is None:
             resistance = 1.0
         dmg = int(damage * resistance)
         self.confusion_resist = max(0, self.confusion_resist - dmg)
+        return dmg
 
     def heal_hp(self, amount: int) -> None:
         """HPを回復する"""

@@ -1,9 +1,8 @@
 import random
 from scripts.models.unit import Unit
-from scripts.models.dice import VelocityDice, is_attack, is_block, is_evade
+from scripts.models.dice import VelocityDice
 from enum import Enum, auto
 from dataclasses import dataclass
-from collections import deque
 
 
 class ClashType(Enum):

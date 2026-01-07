@@ -1,6 +1,42 @@
 import pygame
-from scripts.models.unit import Unit
+from scripts.models.unit import Unit, DamageType, HealType
 from scripts.ui.battle.velocity_dice import VelocityDiceView
+
+
+class DamagePopup:
+    def __init__(self, amount: int, damage_type: DamageType, ttl: float = 0.6):
+        self.amount = amount
+        self.damage_type = damage_type
+        self.ttl = ttl
+
+        self.age = 0.0
+        self.y_offset = 0.0
+
+    def update(self, dt: float):
+        self.age += dt
+        self.y_offset -= 30 * dt  # 上に移動
+
+    @property
+    def alive(self) -> bool:
+        return self.age < self.ttl
+
+
+class HealPopup:
+    def __init__(self, amount: int, heal_type: HealType, ttl: float = 0.6):
+        self.amount = amount
+        self.heal_type = heal_type
+        self.ttl = ttl
+
+        self.age = 0.0
+        self.y_offset = 0.0
+
+    def update(self, dt: float):
+        self.age += dt
+        self.y_offset -= 30 * dt  # 上に移動
+
+    @property
+    def alive(self) -> bool:
+        return self.age < self.ttl
 
 
 class UnitView:
@@ -21,6 +57,13 @@ class UnitView:
         self.img = pygame.transform.scale(self.animation.get_img(), size=self.size)
         self.rect = self.img.get_rect(topleft=self.pos)
 
+        # ダメージUI
+        self.hit_flash = 0.0
+        self.popups_damage: list[DamagePopup] = []
+
+        # 回復UI
+        self.popups_heal: list[HealPopup] = []
+
         # 速度ダイス画像
         self.vel_dice_ui_list = [
             VelocityDiceView(
@@ -36,9 +79,32 @@ class UnitView:
         self.font = self.game.fonts.get("dot", 20)
         self.small_font = self.game.fonts.get("dot", 12)
 
+    def on_damage(self, amount: int, damage_type: DamageType = DamageType.HP):
+        if amount <= 0:
+            return
+        self.hit_flash = 0.15
+        self.popups_damage.append(DamagePopup(amount, damage_type))
+
+    def on_hela(self, amount: int, heal_type: HealType = HealType.HP):
+        if amount <= 0:
+            return
+        self.popups_heal.append(HealPopup(amount, heal_type))
+
     def update(self, dt: float):
         self.animation.update(dt)
         self.img = pygame.transform.scale(self.animation.get_img(), size=self.size)
+
+        # ダメージ判定
+        if self.hit_flash > 0:
+            self.hit_flash = max(0.0, self.hit_flash - dt)
+        for p in self.popups_damage:
+            p.update(dt)
+        self.popups_damage = [p for p in self.popups_damage if p.alive]
+
+        # 回復判定
+        for p in self.popups_heal:
+            p.update(dt)
+        self.popups_heal = [p for p in self.popups_heal if p.alive]
 
     def render(self, surface: pygame.Surface):
         surface.blit(self.img, self.rect)
@@ -85,6 +151,43 @@ class UnitView:
         # 速度ダイス
         for vel_dice_ui in self.vel_dice_ui_list:
             vel_dice_ui.render(surface)
+
+        # ダメージフラッシュ
+        if self.hit_flash > 0:
+            overlay = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+            overlay.fill((255, 255, 255, 140))
+            surface.blit(overlay, self.rect.topleft)
+
+        # ダメージ数字ポップ
+        for p in self.popups_damage:
+            text = f"-{p.amount}"
+            # HPダメージの場合
+            if p.damage_type == DamageType.HP:
+                surf = self.font.render(text, True, (255, 0, 0))
+                x = self.rect.centerx - surf.get_width() // 2 - 20
+                y = self.rect.top - 20 + int(p.y_offset)
+            # 混乱ダメージの場合
+            else:
+                surf = self.font.render(text, True, (255, 255, 0))
+                x = self.rect.centerx - surf.get_width() // 2 + 20
+                y = self.rect.top - 20 + int(p.y_offset)
+
+            surface.blit(surf, (x, y))
+
+        # 回復数字ポップ
+        for p in self.popups_heal:
+            text = f"+{p.amount}"
+            surf = self.font.render(text, True, (0, 255, 255))
+            # HPダメージの場合
+            if p.heal_type == DamageType.HP:
+                x = self.rect.centerx - surf.get_width() // 2 - 20
+                y = self.rect.top - 20 + int(p.y_offset)
+            # 混乱ダメージの場合
+            else:
+                x = self.rect.centerx - surf.get_width() // 2 + 20
+                y = self.rect.top - 20 + int(p.y_offset)
+
+            surface.blit(surf, (x, y))
 
     def _render_bar(self, surface, rect, current, maximum, color, label: str):
         # 背景（空ゲージ）
