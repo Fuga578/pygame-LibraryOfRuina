@@ -1,3 +1,4 @@
+import pygame
 from dataclasses import dataclass
 from enum import Enum, auto
 from scripts.battle.states.base import BattleState
@@ -7,6 +8,7 @@ from scripts.models.unit import DamageType, HealType
 
 
 class ResolvePhase(Enum):
+    PREPARE = auto()        # 準備フェーズ
     ROLL = auto()           # ダイスのロールフェーズ
     APPLY = auto()          # ダメージ適用フェーズ
 
@@ -41,7 +43,7 @@ class ResolveState(BattleState):
         print("Enter: ResolveState")
         self.scene.state_name = "RESOLVE STATE"
 
-        self.phase = ResolvePhase.ROLL    # 初期フェーズ
+        self.phase = ResolvePhase.PREPARE    # 初期フェーズ
         self.step_result: StepResult | None = None  # 1ステップの結果保持用
 
         # 一方攻撃/マッチの判定更新
@@ -69,9 +71,9 @@ class ResolveState(BattleState):
             # 処理するペア（マッチ/一方攻撃）
             pair = self.queue[self.queue_index]
 
-            # ダイスロールで値を確定するフェーズ --
-            if self.phase == ResolvePhase.ROLL:
-                done, res = self._roll_one_step(pair)  # 1ダイスだけ処理を進める
+            # マッチ/一方攻撃準備フェーズ
+            if self.phase == ResolvePhase.PREPARE:
+                done, res = self._prepare_one_step(pair)  # 1ダイスだけ処理を進める
 
                 # 現在のペアが終了した場合、次のペアへ
                 if done:
@@ -82,6 +84,15 @@ class ResolveState(BattleState):
 
                 # 次のフェーズへ
                 self.step_result = res
+                self.phase = ResolvePhase.ROLL
+                return
+
+            # ダイスロールで値を確定するフェーズ --
+            if self.phase == ResolvePhase.ROLL:
+                # ダイスロール実行
+                self._confirm_roll(self.step_result)
+
+                # 次のフェーズへ
                 self.phase = ResolvePhase.APPLY
                 return
             # ---------------------------------
@@ -90,20 +101,85 @@ class ResolveState(BattleState):
             if self.phase == ResolvePhase.APPLY:
                 self._apply_one_step(self.step_result)  # 1ダイス分だけダメージ判定
                 self.step_result = None
-                self.phase = ResolvePhase.ROLL
+                self.phase = ResolvePhase.PREPARE
                 return
             # ---------------------------------
 
     def update(self, dt: float) -> None:
         pass
 
-    def render(self, surface) -> None:
-        pass
+    def render(self, surface):
+        if self.queue_index >= len(self.queue):
+            return
+
+        pair = self.queue[self.queue_index]
+
+        # ダイス一覧は pair から
+        a_dices = None
+        if pair.a_vel_dice and pair.a_vel_dice.card:
+            a_dices = pair.a_vel_dice.card.dice_list
+        b_dices = None
+        if pair.b_vel_dice and pair.b_vel_dice.card:
+            b_dices = pair.b_vel_dice.card.dice_list
+
+        left = pygame.Rect(40, 40, 320, 80)
+        right = pygame.Rect(surface.get_width() - 360, 40, 320, 80)
+
+        if self.step_result:
+            if pair.a_vel_dice.owner.is_ally:
+                self._render_dice_list(surface, right, a_dices, self.a_index, pair.a_vel_dice.owner.name)
+
+                if pair.kind == ClashType.CLASH and b_dices:
+                    self._render_dice_list(surface, left, b_dices, self.b_index, pair.b_vel_dice.owner.name)
+            else:
+                self._render_dice_list(surface, left, a_dices, self.a_index, pair.a_vel_dice.owner.name)
+
+                if pair.kind == ClashType.CLASH and b_dices:
+                    self._render_dice_list(surface, right, b_dices, self.b_index, pair.b_vel_dice.owner.name)
+
+        # ロール確定表示（上に重ねる）
+        if self.step_result and self.phase != ResolvePhase.PREPARE:
+            font = self.scene.game.fonts.get("dot", 64)
+            cx = surface.get_width() // 2
+            cy = surface.get_height() // 2
+            if self.step_result.b_die is not None:
+                s = f"{self.step_result.a_die.val} vs {self.step_result.b_die.val}"
+            else:
+                s = f"{self.step_result.a_die.val}"
+
+            surf = font.render(s, True, (255, 255, 255))
+            surface.blit(surf, (cx - surf.get_width() // 2, cy - surf.get_height() // 2))
 
     def _go_next_state(self):
         # 次の状態へ遷移
         from scripts.battle.states.round_start import RoundStartState
         self.scene.change_state(RoundStartState(self.scene))
+
+    def _render_dice_list(self, surface, rect, dices, idx, title):
+        font = self.scene.game.fonts.get("dot", 20)
+        pygame.draw.rect(surface, (20, 20, 20), rect, border_radius=8)
+        pygame.draw.rect(surface, (220, 220, 220), rect, 2, border_radius=8)
+
+        surface.blit(font.render(title, True, (255, 255, 255)), (rect.x + 8, rect.y + 6))
+
+        x = rect.x + 10
+        y = rect.y + 34
+        size = 22
+        gap = 6
+
+        for i, d in enumerate(dices):
+            box = pygame.Rect(x + i * (size + gap), y, size, size)
+            if i < idx:
+                col = (70, 70, 70)
+            elif i == idx:
+                col = (240, 240, 240)
+            else:
+                col = (140, 140, 140)
+            pygame.draw.rect(surface, col, box, border_radius=4)
+
+            tag = "A" if is_attack(d) else "B" if is_block(d) else "E"
+            t = font.render(tag, True, (0, 0, 0))
+            surface.blit(t, (box.centerx - t.get_width() // 2, box.centery - t.get_height() // 2))
 
     def _build_queue(self) -> list[ResolverPair]:
         """マッチ/一方攻撃判定用のリストを取得"""
@@ -140,19 +216,37 @@ class ResolveState(BattleState):
 
         return queue
 
-    def _roll_one_step(self, pair) -> tuple[bool, StepResult | None]:
+    def _get_roll_panel_rect(self, unit_view_rect: pygame.Rect, side: str) -> pygame.Rect:
+        w, h = 260, 140
+        y = unit_view_rect.centery - h // 2
+        if side == "left":
+            x = unit_view_rect.left - 20 - w
+        else:
+            x = unit_view_rect.right + 20
+        return pygame.Rect(x, y, w, h)
+
+    def _confirm_roll(self, res: StepResult):
+        if res is None:
+            return
+
+        if res.a_die:
+            res.a_die.roll()
+        if res.b_die:
+            res.b_die.roll()
+
+    def _prepare_one_step(self, pair) -> tuple[bool, StepResult | None]:
         """1ダイスだけロール処理"""
 
         # マッチの場合
         if pair.kind == ClashType.CLASH:
-            return self._step_clash_roll(pair)
+            return self._step_clash_prepare(pair)
         # 一方攻撃の場合
         else:
             attacker_vel_dice = pair.a_vel_dice
             defender_vel_dice = pair.b_vel_dice
-            return self._step_one_sided_roll(attacker_vel_dice, defender_vel_dice, True)
+            return self._step_one_sided_prepare(attacker_vel_dice, defender_vel_dice, True)
 
-    def _step_clash_roll(self, pair: ResolverPair) -> tuple[bool, StepResult | None]:
+    def _step_clash_prepare(self, pair: ResolverPair) -> tuple[bool, StepResult | None]:
         """マッチ判定1ダイス分"""
         # 速度ダイス
         a_vel_dice = pair.a_vel_dice
@@ -164,9 +258,9 @@ class ResolveState(BattleState):
         # どちらか一方のみがダイス切れの場合、一方攻撃
         else:
             if self.a_index >= len(a_vel_dice.card.dice_list):
-                return self._step_one_sided_roll(attacker_vel_dice=b_vel_dice, defender_vel_dice=a_vel_dice, is_use_a_index=False)
+                return self._step_one_sided_prepare(attacker_vel_dice=b_vel_dice, defender_vel_dice=a_vel_dice, is_use_a_index=False)
             elif self.b_index >= len(b_vel_dice.card.dice_list):
-                return self._step_one_sided_roll(attacker_vel_dice=a_vel_dice, defender_vel_dice=b_vel_dice, is_use_a_index=True)
+                return self._step_one_sided_prepare(attacker_vel_dice=a_vel_dice, defender_vel_dice=b_vel_dice, is_use_a_index=True)
 
         # ユニット
         a_unit = a_vel_dice.owner
@@ -182,9 +276,9 @@ class ResolveState(BattleState):
         # どちらか一方のみが混乱状態の場合、一方攻撃
         else:
             if a_unit.is_confused():
-                return self._step_one_sided_roll(attacker_vel_dice=b_vel_dice, defender_vel_dice=a_vel_dice, is_use_a_index=False)
+                return self._step_one_sided_prepare(attacker_vel_dice=b_vel_dice, defender_vel_dice=a_vel_dice, is_use_a_index=False)
             elif b_unit.is_confused():
-                return self._step_one_sided_roll(attacker_vel_dice=a_vel_dice, defender_vel_dice=b_vel_dice, is_use_a_index=True)
+                return self._step_one_sided_prepare(attacker_vel_dice=a_vel_dice, defender_vel_dice=b_vel_dice, is_use_a_index=True)
 
         # ダイス一覧
         a_dices = list(a_vel_dice.card.dice_list)
@@ -193,10 +287,6 @@ class ResolveState(BattleState):
         # ダイス
         a_die = a_dices[self.a_index]
         b_die = b_dices[self.b_index]
-
-        # ダイスロール
-        a_die.roll()
-        b_die.roll()
 
         res = StepResult(
             clash_type=ClashType.CLASH,
@@ -209,7 +299,7 @@ class ResolveState(BattleState):
 
         return False, res
 
-    def _step_one_sided_roll(self, attacker_vel_dice, defender_vel_dice, is_use_a_index) -> tuple[bool, StepResult | None]:
+    def _step_one_sided_prepare(self, attacker_vel_dice, defender_vel_dice, is_use_a_index) -> tuple[bool, StepResult | None]:
         """一方攻撃判定1ダイス分"""
         idx = self.a_index if is_use_a_index else self.b_index
 
@@ -231,10 +321,6 @@ class ResolveState(BattleState):
         # 攻撃者のダイス
         a_dices = list(attacker_vel_dice.card.dice_list)
         a_die = a_dices[idx]
-
-        # TODO: 攻撃ダイスの場合はダイスロール
-        a_die.roll()
-        # TODO: 攻撃ダイス以外の場合は使用せずに保持
 
         res = StepResult(
             clash_type=ClashType.ONE_SIDED,
@@ -437,7 +523,11 @@ class ResolveState(BattleState):
 
         # 攻撃ダイスの場合
         if is_attack(a_die):
-            b_unit.take_damage(damage=a_die.val, dice_type=a_die.d_type)
+            hp_damage, confusion_damage = b_unit.take_damage(damage=a_die.val, dice_type=a_die.d_type)
+
+            unit_ui = self.scene.unit_ui_id_map[id(b_unit)]
+            unit_ui.on_damage(hp_damage, HealType.HP)
+            unit_ui.on_damage(confusion_damage, HealType.CONFUSION)
         # 攻撃ダイス以外の場合、使用せずに保存
         else:
             a_unit.remaining_dices.append(a_die)

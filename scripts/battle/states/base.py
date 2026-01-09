@@ -5,9 +5,9 @@ class BattleState(ABC):
     def __init__(self, scene: "BattleScene"):
         self.scene = scene
 
-        self.scene.system.debug_dump_units(
-            self.scene.allies + self.scene.enemies
-        )
+        # self.scene.system.debug_dump_units(
+        #     self.scene.allies + self.scene.enemies
+        # )
 
     @abstractmethod
     def enter(self) -> None:

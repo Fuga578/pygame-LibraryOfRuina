@@ -85,7 +85,7 @@ class UnitView:
         self.hit_flash = 0.15
         self.popups_damage.append(DamagePopup(amount, damage_type))
 
-    def on_hela(self, amount: int, heal_type: HealType = HealType.HP):
+    def on_heal(self, amount: int, heal_type: HealType = HealType.HP):
         if amount <= 0:
             return
         self.popups_heal.append(HealPopup(amount, heal_type))
