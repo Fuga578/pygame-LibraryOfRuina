@@ -17,6 +17,8 @@ class RoundStartState(BattleState):
         units = self.scene.allies + self.scene.enemies
         for unit in units:
             unit.init()
+        for unit_ui in self.scene.allies_ui + self.scene.enemies_ui:
+            unit_ui.is_dimmed = False
 
     def exit(self) -> None:
         print("Exit: RoundStartState")

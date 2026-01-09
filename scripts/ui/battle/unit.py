@@ -59,6 +59,7 @@ class UnitView:
 
         # 半透明
         self.is_dimmed = False
+        self.alpha = 100
 
         # ダメージUI
         self.hit_flash = 0.0
@@ -110,33 +111,31 @@ class UnitView:
         self.popups_heal = [p for p in self.popups_heal if p.alive]
 
     def render(self, surface: pygame.Surface):
-        img = self.img
+        ui_surf = pygame.Surface(surface.size, pygame.SRCALPHA)
 
+        img = self.img
+        img.set_alpha(255)
         if self.is_dimmed:
-            dim = pygame.Surface(self.rect.size, pygame.SRCALPHA)
-            dim.fill((0, 0, 0, 120))  # 半透明の黒
-            surface.blit(img, self.rect)
-            surface.blit(dim, self.rect)
-        else:
-            surface.blit(img, self.rect)
+            img.set_alpha(self.alpha)
+        surface.blit(img, self.rect)
 
         # HPバー
         self._render_bar(
-            surface,
+            ui_surf,
             pygame.Rect(self.rect.left, self.rect.bottom, self.rect.width, 5),
             current=self.unit.hp,
             maximum=self.unit.max_hp,
-            color=(255, 0, 0),
+            color=(255, 0, 0, self.alpha) if self.is_dimmed else (255, 0, 0),
             label=f"{self.unit.hp}/{self.unit.max_hp}",
         )
 
         # 混乱耐性バー
         self._render_bar(
-            surface,
+            ui_surf,
             pygame.Rect(self.rect.left, self.rect.bottom + 15, self.rect.width, 5),
             current=self.unit.confusion_resist,
             maximum=self.unit.max_confusion_resist,
-            color=(255, 255, 0),
+            color=(255, 255, 0, self.alpha) if self.is_dimmed else (255, 255, 0),
             label=f"{self.unit.confusion_resist}/{self.unit.max_confusion_resist}",
         )
 
@@ -153,9 +152,9 @@ class UnitView:
             x = int(round(start_x + i * gap))
 
             if i >= self.unit.light:
-                color = (255, 255, 0)  # 点灯
+                color = (255, 255, 0, self.alpha) if self.is_dimmed else (255, 255, 0)
             else:
-                color = (255, 255, 100)  # 空
+                color = (255, 255, 100, self.alpha) if self.is_dimmed else (255, 255, 100)
 
             pygame.draw.circle(surface, color, (x, y), 3)
 
@@ -200,9 +199,14 @@ class UnitView:
 
             surface.blit(surf, (x, y))
 
+        surface.blit(ui_surf, (0, 0))
+
     def _render_bar(self, surface, rect, current, maximum, color, label: str):
         # 背景（空ゲージ）
-        pygame.draw.rect(surface, (50, 50, 50), rect, border_radius=6)
+        if self.is_dimmed:
+            pygame.draw.rect(surface, (50, 50, 50), rect, border_radius=6)
+        else:
+            pygame.draw.rect(surface, (50, 50, 50, self.alpha), rect, border_radius=6)
 
         # 値が0除算にならないように
         if maximum <= 0:

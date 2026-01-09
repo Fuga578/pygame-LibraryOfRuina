@@ -142,26 +142,6 @@ class ResolveState(BattleState):
             if pair.kind == ClashType.CLASH:
                 self._render_dice_list(surface, right, b_dices, self.b_index, pair.b_vel_dice.owner.name)
 
-        # font = self.scene.game.fonts.get("dot", 64)
-        # cx = surface.get_width() // 2
-        # cy = surface.get_height() // 2
-        #
-        # if self.step_result is None:
-        #     s = "-" if pair.kind != ClashType.CLASH else "- vs -"
-        # else:
-        #     a_txt = str(self.step_result.a_roll) if self.step_result.a_roll is not None else "-"
-        #     if pair.kind == ClashType.CLASH and self.step_result.b_die is not None:
-        #         b_txt = str(self.step_result.b_roll) if self.step_result.b_roll is not None else "-"
-        #         if pair.a_vel_dice.owner.is_ally:
-        #             s = f"{b_txt} vs {a_txt}"
-        #         else:
-        #             s = f"{a_txt} vs {b_txt}"
-        #     else:
-        #         s = f"{a_txt}"
-        #
-        # surf = font.render(s, True, (255, 255, 255))
-        # surface.blit(surf, (cx - surf.get_width() // 2, cy - surf.get_height() // 2))
-
     def _go_next_state(self):
         # 次の状態へ遷移
         from scripts.battle.states.round_start import RoundStartState
