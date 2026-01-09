@@ -122,7 +122,7 @@ def create_sample_units(deck, num=3, is_ally=True):
         unit = Unit(
             name=f"{name_prefix}/{i + 1}",
             max_hp=30,
-            max_confusion_resist=10,
+            max_confusion_resist=20,
             max_light=3,
             min_speed=1,
             max_speed=6,

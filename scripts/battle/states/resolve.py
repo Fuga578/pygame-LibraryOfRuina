@@ -2,7 +2,7 @@ import pygame
 from dataclasses import dataclass
 from enum import Enum, auto
 from scripts.battle.states.base import BattleState
-from scripts.models.dice import VelocityDice, Dice, is_attack, is_block, is_evade
+from scripts.models.dice import VelocityDice, DiceType, Dice, is_attack, is_block, is_evade
 from scripts.battle.system import ClashType
 from scripts.models.unit import DamageType, HealType
 
@@ -22,6 +22,8 @@ class StepResult:
     b_vel_dice: VelocityDice | None = None
     a_die: Dice | None = None
     b_die: Dice | None = None
+    a_roll: int | None = None
+    b_roll: int | None = None
 
 
 @dataclass
@@ -106,7 +108,17 @@ class ResolveState(BattleState):
             # ---------------------------------
 
     def update(self, dt: float) -> None:
-        pass
+        if self.queue_index < len(self.queue):
+            pair = self.queue[self.queue_index]
+
+            active_units_name = {
+                pair.a_vel_dice.owner.name,
+                pair.b_vel_dice.owner.name,
+            }
+            for unit_ui in self.scene.allies_ui + self.scene.enemies_ui:
+                unit_ui.is_dimmed = True
+                if unit_ui.unit.name in active_units_name:
+                    unit_ui.is_dimmed = False
 
     def render(self, surface):
         if self.queue_index >= len(self.queue):
@@ -114,41 +126,41 @@ class ResolveState(BattleState):
 
         pair = self.queue[self.queue_index]
 
-        # ダイス一覧は pair から
-        a_dices = None
-        if pair.a_vel_dice and pair.a_vel_dice.card:
-            a_dices = pair.a_vel_dice.card.dice_list
-        b_dices = None
-        if pair.b_vel_dice and pair.b_vel_dice.card:
-            b_dices = pair.b_vel_dice.card.dice_list
+        # ダイス一覧（pairから取る）
+        a_dices = pair.a_vel_dice.card.dice_list if pair.a_vel_dice and pair.a_vel_dice.card else []
+        b_dices = pair.b_vel_dice.card.dice_list if pair.b_vel_dice and pair.b_vel_dice.card else []
 
         left = pygame.Rect(40, 40, 320, 80)
         right = pygame.Rect(surface.get_width() - 360, 40, 320, 80)
 
-        if self.step_result:
-            if pair.a_vel_dice.owner.is_ally:
-                self._render_dice_list(surface, right, a_dices, self.a_index, pair.a_vel_dice.owner.name)
+        if pair.a_vel_dice.owner.is_ally:
+            self._render_dice_list(surface, right, a_dices, self.a_index, pair.a_vel_dice.owner.name)
+            if pair.kind == ClashType.CLASH:
+                self._render_dice_list(surface, left, b_dices, self.b_index, pair.b_vel_dice.owner.name)
+        else:
+            self._render_dice_list(surface, left, a_dices, self.a_index, pair.a_vel_dice.owner.name)
+            if pair.kind == ClashType.CLASH:
+                self._render_dice_list(surface, right, b_dices, self.b_index, pair.b_vel_dice.owner.name)
 
-                if pair.kind == ClashType.CLASH and b_dices:
-                    self._render_dice_list(surface, left, b_dices, self.b_index, pair.b_vel_dice.owner.name)
-            else:
-                self._render_dice_list(surface, left, a_dices, self.a_index, pair.a_vel_dice.owner.name)
-
-                if pair.kind == ClashType.CLASH and b_dices:
-                    self._render_dice_list(surface, right, b_dices, self.b_index, pair.b_vel_dice.owner.name)
-
-        # ロール確定表示（上に重ねる）
-        if self.step_result and self.phase != ResolvePhase.PREPARE:
-            font = self.scene.game.fonts.get("dot", 64)
-            cx = surface.get_width() // 2
-            cy = surface.get_height() // 2
-            if self.step_result.b_die is not None:
-                s = f"{self.step_result.a_die.val} vs {self.step_result.b_die.val}"
-            else:
-                s = f"{self.step_result.a_die.val}"
-
-            surf = font.render(s, True, (255, 255, 255))
-            surface.blit(surf, (cx - surf.get_width() // 2, cy - surf.get_height() // 2))
+        # font = self.scene.game.fonts.get("dot", 64)
+        # cx = surface.get_width() // 2
+        # cy = surface.get_height() // 2
+        #
+        # if self.step_result is None:
+        #     s = "-" if pair.kind != ClashType.CLASH else "- vs -"
+        # else:
+        #     a_txt = str(self.step_result.a_roll) if self.step_result.a_roll is not None else "-"
+        #     if pair.kind == ClashType.CLASH and self.step_result.b_die is not None:
+        #         b_txt = str(self.step_result.b_roll) if self.step_result.b_roll is not None else "-"
+        #         if pair.a_vel_dice.owner.is_ally:
+        #             s = f"{b_txt} vs {a_txt}"
+        #         else:
+        #             s = f"{a_txt} vs {b_txt}"
+        #     else:
+        #         s = f"{a_txt}"
+        #
+        # surf = font.render(s, True, (255, 255, 255))
+        # surface.blit(surf, (cx - surf.get_width() // 2, cy - surf.get_height() // 2))
 
     def _go_next_state(self):
         # 次の状態へ遷移
@@ -165,21 +177,33 @@ class ResolveState(BattleState):
         x = rect.x + 10
         y = rect.y + 34
         size = 22
-        gap = 6
+        gap = 12
 
-        for i, d in enumerate(dices):
-            box = pygame.Rect(x + i * (size + gap), y, size, size)
-            if i < idx:
-                col = (70, 70, 70)
-            elif i == idx:
-                col = (240, 240, 240)
+        for i in range(idx, len(dices)):
+            d = dices[i]
+            box = pygame.Rect(x + (i - idx) * (size + gap), y, size, size)
+
+            self.icon = None
+            if d.d_type == DiceType.SLASH:
+                self.icon = self.scene.game.assets["slash_icon"]
+            elif d.d_type == DiceType.PIERCE:
+                self.icon = self.scene.game.assets["pierce_icon"]
+            elif d.d_type == DiceType.BLUNT:
+                self.icon = self.scene.game.assets["blunt_icon"]
+            elif d.d_type == DiceType.BLOCK:
+                self.icon = self.scene.game.assets["block_icon"]
+            elif d.d_type == DiceType.EVADE:
+                self.icon = self.scene.game.assets["evade_icon"]
+
+            if d.val is None:
+                surface.blit(self.icon, (box.centerx - self.icon.get_width() // 2, box.centery - self.icon.get_height() // 2 + 8))
             else:
-                col = (140, 140, 140)
-            pygame.draw.rect(surface, col, box, border_radius=4)
+                self.dice_icon = self.scene.game.assets["vel_dice"]
+                surface.blit(self.dice_icon, (box.centerx - self.icon.get_width() // 2, box.centery - self.icon.get_height() // 2 + 8))
 
-            tag = "A" if is_attack(d) else "B" if is_block(d) else "E"
-            t = font.render(tag, True, (0, 0, 0))
-            surface.blit(t, (box.centerx - t.get_width() // 2, box.centery - t.get_height() // 2))
+                font = self.scene.game.fonts.get("dot", 16)
+                surf = font.render(f"{d.val}", True, (0, 0, 0))
+                surface.blit(surf, (box.centerx - surf.get_width() // 2, box.centery - surf.get_height() // 2 + 8))
 
     def _build_queue(self) -> list[ResolverPair]:
         """マッチ/一方攻撃判定用のリストを取得"""
@@ -229,10 +253,10 @@ class ResolveState(BattleState):
         if res is None:
             return
 
-        if res.a_die:
-            res.a_die.roll()
-        if res.b_die:
-            res.b_die.roll()
+        if res.a_die and res.a_roll is None:
+            res.a_roll = res.a_die.roll()
+        if res.b_die and res.b_roll is None:
+            res.b_roll = res.b_die.roll()
 
     def _prepare_one_step(self, pair) -> tuple[bool, StepResult | None]:
         """1ダイスだけロール処理"""
@@ -526,8 +550,8 @@ class ResolveState(BattleState):
             hp_damage, confusion_damage = b_unit.take_damage(damage=a_die.val, dice_type=a_die.d_type)
 
             unit_ui = self.scene.unit_ui_id_map[id(b_unit)]
-            unit_ui.on_damage(hp_damage, HealType.HP)
-            unit_ui.on_damage(confusion_damage, HealType.CONFUSION)
+            unit_ui.on_damage(hp_damage, DamageType.HP)
+            unit_ui.on_damage(confusion_damage, DamageType.CONFUSION)
         # 攻撃ダイス以外の場合、使用せずに保存
         else:
             a_unit.remaining_dices.append(a_die)

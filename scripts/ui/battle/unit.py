@@ -57,6 +57,9 @@ class UnitView:
         self.img = pygame.transform.scale(self.animation.get_img(), size=self.size)
         self.rect = self.img.get_rect(topleft=self.pos)
 
+        # 半透明
+        self.is_dimmed = False
+
         # ダメージUI
         self.hit_flash = 0.0
         self.popups_damage: list[DamagePopup] = []
@@ -107,7 +110,15 @@ class UnitView:
         self.popups_heal = [p for p in self.popups_heal if p.alive]
 
     def render(self, surface: pygame.Surface):
-        surface.blit(self.img, self.rect)
+        img = self.img
+
+        if self.is_dimmed:
+            dim = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+            dim.fill((0, 0, 0, 120))  # 半透明の黒
+            surface.blit(img, self.rect)
+            surface.blit(dim, self.rect)
+        else:
+            surface.blit(img, self.rect)
 
         # HPバー
         self._render_bar(
