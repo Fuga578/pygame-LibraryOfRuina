@@ -26,8 +26,12 @@ class CardView:
         surface.blit(self.img, self.rect)
 
         # カード名
-        name_surf = self.font.render(self.card.name, True, (0, 0, 0))
-        surface.blit(name_surf, (self.rect.x + 50, self.rect.y + 13))
+        name_x = self.rect.x + 50
+        name_y = self.rect.y + 13
+        max_width = self.rect.right - name_x - 10  # 右に余白10
+
+        font, name_surf = self._fit_text(self.card.name, max_width, base_size=20, min_size=12)
+        surface.blit(name_surf, (name_x, name_y))
 
         # コスト
         cost_surf = self.font.render(f"{self.card.cost}", True, (0, 0, 0))
@@ -63,3 +67,26 @@ class CardView:
 
     def is_hovered(self, mouse_pos):
         return self.rect.collidepoint(mouse_pos)
+
+    def _fit_text(self, text: str, max_width: int, base_size: int = 20, min_size: int = 12):
+        """
+        1) base_size から min_size まで縮小して幅に収まるか試す
+        2) それでも無理なら min_size のまま末尾を '…' で省略
+        戻り値: (font, rendered_surface)
+        """
+        # 縮小
+        for size in range(base_size, min_size - 1, -1):
+            font = self.game.fonts.get("dot", size)
+            if font.size(text)[0] <= max_width:
+                return font, font.render(text, True, (0, 0, 0))
+
+        # 省略
+        font = self.game.fonts.get("dot", min_size)
+        ell = "…"
+        if font.size(text)[0] <= max_width:
+            return font, font.render(text, True, (0, 0, 0))
+
+        s = text
+        while s and font.size(s + ell)[0] > max_width:
+            s = s[:-1]
+        return font, font.render(s + ell if s else ell, True, (0, 0, 0))
