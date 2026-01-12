@@ -19,14 +19,14 @@ class EnemyPlanState(BattleState):
             ally_slots=self.scene.ally_slots,
         )
 
+        # 次の状態へ遷移
+        self._go_next_state()
+
     def exit(self) -> None:
         print("Exit: EnemyPlanState")
 
     def handle(self) -> None:
-        if self.scene.game.inputs["left_click_down"]:
-
-            # 次の状態へ遷移
-            self._go_next_state()
+        pass
 
     def update(self, dt: float) -> None:
         pass

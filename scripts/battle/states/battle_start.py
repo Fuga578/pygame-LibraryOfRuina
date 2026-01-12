@@ -17,23 +17,23 @@ class BattleStartState(BattleState):
         print("Enter: BattleStartState")
         self.scene.state_name = "BATTLE START STATE"
 
+        # ユニット作成
+        self._create_units()
+
+        # 戦闘開始処理を実行
+        self.scene.system.start_battle(
+            units=self.scene.allies + self.scene.enemies
+        )
+
+        # 次の状態へ遷移
+        self._go_next_state()
+
     def exit(self) -> None:
         self.scene._create_unit_panels()
         print("Exit: BattleStartState")
 
     def handle(self) -> None:
-        if self.scene.game.inputs["left_click_down"]:
-
-            # ユニット作成
-            self._create_units()
-
-            # 戦闘開始処理を実行
-            self.scene.system.start_battle(
-                units=self.scene.allies + self.scene.enemies
-            )
-
-            # 次の状態へ遷移
-            self._go_next_state()
+        pass
 
     def update(self, dt: float) -> None:
         pass

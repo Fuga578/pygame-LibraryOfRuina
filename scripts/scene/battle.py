@@ -25,6 +25,11 @@ class BattleScene(Scene):
         self.enemy_slots = []   # 敵の速度ダイス一覧（速度順）
         self.all_slots = []     # 全ユニットの速度ダイス一覧（速度順）
 
+        # ユニットのUI
+        self.allies_ui = []
+        self.enemies_ui = []
+        self.unit_ui_id_map = {}
+
         # コンテキスト
         self.context = BattleContext()
 
@@ -42,13 +47,8 @@ class BattleScene(Scene):
         # フォント
         self.font = self.game.fonts.get("dot", 20)
 
-        # ユニットのUI
-        self.allies_ui = []
-        self.enemies_ui = []
-        self.unit_ui_id_map = {}
-
         # バトル開始ボタン
-        self.battle_start_button = BattleStartButton(self.game, size=(80, 50), pos=(self.game.screen.get_width() // 2 - 80/2, 10))
+        self.battle_start_button = BattleStartButton(self.game, size=(64, 64), pos=(self.game.screen.get_width() // 2 - 64/2, 10))
 
     def handle(self):
         self.state.handle()

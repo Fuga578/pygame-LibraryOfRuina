@@ -68,6 +68,7 @@ class Game:
             "blunt_icon": load_image("assets/images/dice/blunt_icon.png"),
             "block_icon": load_image("assets/images/dice/block_icon.png"),
             "evade_icon": load_image("assets/images/dice/evade_icon.png"),
+            "battle_start_button": load_image("assets/images/button/battle_start_button.png")
         }
 
         # マウス位置
