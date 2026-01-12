@@ -80,7 +80,7 @@ class UnitView:
         ]
 
         # フォント
-        self.font = self.game.fonts.get("dot", 20)
+        self.font = self.game.fonts.get("dot", 35)
         self.small_font = self.game.fonts.get("dot", 12)
 
     def on_damage(self, amount: int, damage_type: DamageType = DamageType.HP):

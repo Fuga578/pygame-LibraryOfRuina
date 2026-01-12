@@ -84,6 +84,10 @@ class ResolveState(BattleState):
                     self.b_index = 0
                     return
 
+                # 終了していないのに結果がない場合
+                if res is None:
+                    return
+
                 # 次のフェーズへ
                 self.step_result = res
                 self.phase = ResolvePhase.ROLL
@@ -314,6 +318,19 @@ class ResolveState(BattleState):
         attacker = attacker_vel_dice.owner
         defender = defender_vel_dice.owner
 
+        # 攻撃者のダイス
+        a_dices = list(attacker_vel_dice.card.dice_list)
+        a_die = a_dices[idx]
+
+        # 攻撃ダイス以外の場合
+        if not is_attack(a_die):
+            attacker.remaining_dices.append(a_die)
+            if is_use_a_index:
+                self.a_index += 1
+            else:
+                self.b_index += 1
+            return False, None
+
         # 攻撃者が混乱している場合は終了
         if attacker.is_confused():
             return True, None
@@ -321,10 +338,6 @@ class ResolveState(BattleState):
         # どちらかが死亡していた場合は終了
         if attacker.is_dead() or defender.is_dead():
             return True, None
-
-        # 攻撃者のダイス
-        a_dices = list(attacker_vel_dice.card.dice_list)
-        a_die = a_dices[idx]
 
         res = StepResult(
             clash_type=ClashType.ONE_SIDED,
