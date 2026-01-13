@@ -11,6 +11,7 @@ class ResolvePhase(Enum):
     PREPARE = auto()        # 準備フェーズ
     ROLL = auto()           # ダイスのロールフェーズ
     APPLY = auto()          # ダメージ適用フェーズ
+    HOLD = auto()           # 結果固定表示フェーズ
 
 
 @dataclass
@@ -55,26 +56,112 @@ class ResolveState(BattleState):
         self.queue: list[ResolverPair] = self._build_queue()
         self.queue_index = 0
 
+        self.is_next_phase = False
+
         # 現在処理中のペアのダイス位置
         self.a_index = 0
         self.b_index = 0
+        self.diff_a_index = 0
+        self.diff_b_index = 0
+
+        self.dt = 0.0
+        self.roll_timer = 0.0   # ダイスロール結果表示タイマー
 
     def exit(self) -> None:
         print("Exit: ResolveState")
 
     def handle(self) -> None:
         if self.scene.game.inputs["left_click_down"]:
+            pass
+            # # 全てのマッチ/一方攻撃が終了した場合、次の状態へ遷移
+            # if self.queue_index >= len(self.queue):
+            #     self._go_next_state()
+            #     return
+            #
+            # # 処理するペア（マッチ/一方攻撃）
+            # pair = self.queue[self.queue_index]
+            #
+            # # マッチ/一方攻撃準備フェーズ
+            # if self.phase == ResolvePhase.PREPARE:
+            #     done, res = self._prepare_one_step(pair)  # 1ダイスだけ処理を進める
+            #
+            #     # 現在のペアが終了した場合、次のペアへ
+            #     if done:
+            #         self.queue_index += 1
+            #         self.a_index = 0
+            #         self.b_index = 0
+            #         return
+            #
+            #     # 終了していないのに結果がない場合
+            #     if res is None:
+            #         return
+            #
+            #     # 次のフェーズへ
+            #     self.step_result = res
+            #     self.phase = ResolvePhase.ROLL
+            #     return
+            #
+            # # ダイスロールで値を確定するフェーズ --
+            # if self.phase == ResolvePhase.ROLL:
+            #     # ダイスロール実行
+            #     self._confirm_roll(self.step_result)
+            #
+            #     # 次のフェーズへ
+            #     self.phase = ResolvePhase.APPLY
+            #     return
+            # # ---------------------------------
+            #
+            # # ダメージ適用フェーズ ---------------
+            # if self.phase == ResolvePhase.APPLY:
+            #     self.diff_a_index, self.diff_b_index = self._apply_one_step(self.step_result)  # 1ダイス分だけダメージ判定
+            #     self.phase = ResolvePhase.HOLD
+            #     return
+            # # ---------------------------------
+            #
+            # # 結果固定表示フェーズ ---------------
+            # if self.phase == ResolvePhase.HOLD:
+            #     # 表示は残したまま
+            #     self.step_result = None
+            #     self.a_index += self.diff_a_index
+            #     self.b_index += self.diff_b_index
+            #     self.diff_a_index = 0
+            #     self.diff_b_index = 0
+            #     self.phase = ResolvePhase.PREPARE
+            #     return
+            # # ---------------------------------
 
-            # 全てのマッチ/一方攻撃が終了した場合、次の状態へ遷移
-            if self.queue_index >= len(self.queue):
-                self._go_next_state()
-                return
+    def update(self, dt: float) -> None:
 
-            # 処理するペア（マッチ/一方攻撃）
+        # UI表示 ==============================
+        if self.queue_index < len(self.queue):
             pair = self.queue[self.queue_index]
 
-            # マッチ/一方攻撃準備フェーズ
-            if self.phase == ResolvePhase.PREPARE:
+            active_units_name = {
+                pair.a_vel_dice.owner.name,
+                pair.b_vel_dice.owner.name,
+            }
+            for unit_ui in self.scene.allies_ui + self.scene.enemies_ui:
+                unit_ui.is_dimmed = True
+                if unit_ui.unit.name in active_units_name:
+                    unit_ui.is_dimmed = False
+        # =====================================
+
+        # マッチ/一方攻撃処理 ===================
+        # 全てのマッチ/一方攻撃が終了した場合、次の状態へ遷移
+        if self.queue_index >= len(self.queue):
+            self._go_next_state()
+            return
+
+        # 処理するペア（マッチ/一方攻撃）
+        pair = self.queue[self.queue_index]
+
+        # マッチ/一方攻撃準備フェーズ
+        if self.phase == ResolvePhase.PREPARE:
+            # 次のフェーズへ
+            if self.is_next_phase and self.scene.game.inputs["left_click_down"]:
+                self.is_next_phase = False
+                self.phase = ResolvePhase.ROLL
+            else:
                 done, res = self._prepare_one_step(pair)  # 1ダイスだけ処理を進める
 
                 # 現在のペアが終了した場合、次のペアへ
@@ -88,41 +175,58 @@ class ResolveState(BattleState):
                 if res is None:
                     return
 
-                # 次のフェーズへ
                 self.step_result = res
-                self.phase = ResolvePhase.ROLL
-                return
+                self.is_next_phase = True
 
-            # ダイスロールで値を確定するフェーズ --
-            if self.phase == ResolvePhase.ROLL:
+            return
+
+        # ダイスロールで値を確定するフェーズ --
+        if self.phase == ResolvePhase.ROLL:
+            self.dt += dt
+            # 次のフェーズへ
+            if self.is_next_phase:
+                if self.dt >= 0.5:
+                    self.is_next_phase = False
+                    self.dt = 0.0
+                    self.phase = ResolvePhase.APPLY
+            else:
                 # ダイスロール実行
                 self._confirm_roll(self.step_result)
+                self.is_next_phase = True
+            return
+        # ---------------------------------
 
-                # 次のフェーズへ
-                self.phase = ResolvePhase.APPLY
-                return
-            # ---------------------------------
+        # ダメージ適用フェーズ ---------------
+        if self.phase == ResolvePhase.APPLY:
+            self.dt += dt
+            # 次のフェーズへ
+            if self.is_next_phase:
+                if self.dt >= 1.0:
+                    self.is_next_phase = False
+                    self.dt = 0.0
+                    self.phase = ResolvePhase.HOLD
+            else:
+                self.diff_a_index, self.diff_b_index = self._apply_one_step(self.step_result)  # 1ダイス分だけダメージ判定
+                self.is_next_phase = True
+            return
+        # ---------------------------------
 
-            # ダメージ適用フェーズ ---------------
-            if self.phase == ResolvePhase.APPLY:
-                self._apply_one_step(self.step_result)  # 1ダイス分だけダメージ判定
-                self.step_result = None
+        # 結果固定表示フェーズ ---------------
+        if self.phase == ResolvePhase.HOLD:
+            # 次のフェーズへ
+            if self.is_next_phase:
+                self.is_next_phase = False
                 self.phase = ResolvePhase.PREPARE
-                return
-            # ---------------------------------
-
-    def update(self, dt: float) -> None:
-        if self.queue_index < len(self.queue):
-            pair = self.queue[self.queue_index]
-
-            active_units_name = {
-                pair.a_vel_dice.owner.name,
-                pair.b_vel_dice.owner.name,
-            }
-            for unit_ui in self.scene.allies_ui + self.scene.enemies_ui:
-                unit_ui.is_dimmed = True
-                if unit_ui.unit.name in active_units_name:
-                    unit_ui.is_dimmed = False
+            else:
+                self.step_result = None
+                self.a_index += self.diff_a_index
+                self.b_index += self.diff_b_index
+                self.diff_a_index = 0
+                self.diff_b_index = 0
+                self.is_next_phase = True
+            return
+        # ---------------------------------
+        # =====================================
 
     def render(self, surface):
         if self.queue_index >= len(self.queue):
@@ -351,19 +455,25 @@ class ResolveState(BattleState):
         return False, res
 
     def _apply_one_step(self, res: StepResult | None):
+        diff_a_index = 0
+        diff_b_index = 0
         if res is None:
-            return
+            return diff_a_index, diff_b_index
 
         # マッチ
         if res.clash_type == ClashType.CLASH:
-            self._step_clash_apply(res)
+            diff_a_index, diff_b_index = self._step_clash_apply(res)
         # 一方攻撃
         else:
-            self._step_one_sided_apply(res)
+            diff_a_index, diff_b_index = self._step_one_sided_apply(res)
+
+        return diff_a_index, diff_b_index
 
     def _step_clash_apply(self, res: StepResult | None):
+        diff_a_index = 0
+        diff_b_index = 0
         if res is None:
-            return
+            return diff_a_index, diff_b_index
 
         a_unit = res.a_vel_dice.owner
         b_unit = res.b_vel_dice.owner
@@ -374,8 +484,8 @@ class ResolveState(BattleState):
 
         # 攻撃ダイス vs 攻撃ダイス --------------------
         if is_attack(a_die) and is_attack(b_die):
-            self.a_index += 1
-            self.b_index += 1
+            diff_a_index = 1
+            diff_b_index = 1
             if a_val > b_val:
                 hp_damage, confusion_damage = b_unit.take_damage(damage=a_val, dice_type=a_die.d_type)
 
@@ -394,8 +504,8 @@ class ResolveState(BattleState):
 
         # 攻撃ダイス vs 防御ダイス --------------------
         elif is_attack(a_die) and is_block(b_die):
-            self.a_index += 1
-            self.b_index += 1
+            diff_a_index = 1
+            diff_b_index = 1
             if a_val > b_val:
                 hp_damage, confusion_damage = b_unit.take_damage(damage=a_val - b_val, dice_type=a_die.d_type)
 
@@ -410,8 +520,8 @@ class ResolveState(BattleState):
             else:
                 pass
         elif is_block(a_die) and is_attack(b_die):
-            self.a_index += 1
-            self.b_index += 1
+            diff_a_index = 1
+            diff_b_index = 1
             if a_val > b_val:
                 confusion_damage = b_unit.take_confusion_resist_damage(damage=a_val, dice_type=a_die.d_type)
 
@@ -430,46 +540,46 @@ class ResolveState(BattleState):
         # 攻撃ダイス vs 回避ダイス --------------------
         elif is_attack(a_die) and is_evade(b_die):
             if a_val > b_val:
-                self.a_index += 1
-                self.b_index += 1
+                diff_a_index = 1
+                diff_b_index = 1
                 hp_damage, confusion_damage = b_unit.take_damage(damage=a_val, dice_type=a_die.d_type)
 
                 unit_ui = self.scene.unit_ui_id_map[id(b_unit)]
                 unit_ui.on_damage(hp_damage, DamageType.HP)
                 unit_ui.on_damage(confusion_damage, DamageType.CONFUSION)
             elif a_val < b_val:
-                self.a_index += 1
+                diff_a_index = 1
                 b_unit.heal_confusion_resist(amount=b_val)
 
                 unit_ui = self.scene.unit_ui_id_map[id(b_unit)]
                 unit_ui.on_heal(b_val, HealType.CONFUSION)
             else:
-                self.a_index += 1
-                self.b_index += 1
+                diff_a_index = 1
+                diff_b_index = 1
         elif is_evade(a_die) and is_attack(b_die):
             if a_val > b_val:
-                self.b_index += 1
+                diff_b_index = 1
                 a_unit.heal_confusion_resist(amount=a_val)
 
                 unit_ui = self.scene.unit_ui_id_map[id(a_unit)]
                 unit_ui.on_heal(a_val, HealType.CONFUSION)
             elif a_val < b_val:
-                self.a_index += 1
-                self.b_index += 1
+                diff_a_index = 1
+                diff_b_index = 1
                 hp_damage, confusion_damage = a_unit.take_damage(damage=b_val, dice_type=b_die.d_type)
 
                 unit_ui = self.scene.unit_ui_id_map[id(a_unit)]
                 unit_ui.on_damage(hp_damage, DamageType.HP)
                 unit_ui.on_damage(confusion_damage, DamageType.CONFUSION)
             else:
-                self.a_index += 1
-                self.b_index += 1
+                diff_a_index = 1
+                diff_b_index = 1
         # ------------------------------------------
 
         # 防御ダイス vs 防御ダイス --------------------
         elif is_block(a_die) and is_block(b_die):
-            self.a_index += 1
-            self.b_index += 1
+            diff_a_index = 1
+            diff_b_index = 1
             if a_val > b_val:
                 confusion_damage = b_unit.take_confusion_resist_damage(damage=a_val, dice_type=a_die.d_type)
 
@@ -486,8 +596,8 @@ class ResolveState(BattleState):
 
         # 防御ダイス vs 回避ダイス --------------------
         elif is_block(a_die) and is_evade(b_die):
-            self.a_index += 1
-            self.b_index += 1
+            diff_a_index = 1
+            diff_b_index = 1
             if a_val > b_val:
                 confusion_damage = b_unit.take_confusion_resist_damage(damage=a_val, dice_type=a_die.d_type)
 
@@ -501,8 +611,8 @@ class ResolveState(BattleState):
             else:
                 pass
         elif is_evade(a_die) and is_block(b_die):
-            self.a_index += 1
-            self.b_index += 1
+            diff_a_index = 1
+            diff_b_index = 1
             if a_val > b_val:
                 a_unit.heal_confusion_resist(amount=a_val)
 
@@ -519,24 +629,26 @@ class ResolveState(BattleState):
 
         # 回避ダイス vs 回避ダイス --------------------
         elif is_evade(a_die) and is_evade(b_die):
-            self.a_index += 1
-            self.b_index += 1
+            diff_a_index = 1
+            diff_b_index = 1
         # ------------------------------------------
 
-        return False
+        return diff_a_index, diff_b_index
 
     def _step_one_sided_apply(self, res: StepResult | None):
+        diff_a_index = 0
+        diff_b_index = 0
         if res is None:
-            return
+            return diff_a_index, diff_b_index
 
         a_unit = res.a_vel_dice.owner
         b_unit = res.b_vel_dice.owner
         a_die = res.a_die
 
         if res.is_use_a_index:
-            self.a_index += 1
+            diff_a_index = 1
         else:
-            self.b_index += 1
+            diff_b_index = 1
 
         # 攻撃ダイスの場合
         if is_attack(a_die):
@@ -548,3 +660,5 @@ class ResolveState(BattleState):
         # 攻撃ダイス以外の場合、使用せずに保存
         else:
             a_unit.remaining_dices.append(a_die)
+
+        return diff_a_index, diff_b_index
