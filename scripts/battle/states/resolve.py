@@ -19,6 +19,7 @@ class StepResult:
     """1ステップ結果保持クラス"""
     clash_type: ClashType
     is_use_a_index: bool | None
+    is_clash_remaining_dice: bool | None = None
     a_vel_dice: VelocityDice | None = None
     b_vel_dice: VelocityDice | None = None
     a_die: Dice | None = None
@@ -73,62 +74,6 @@ class ResolveState(BattleState):
     def handle(self) -> None:
         if self.scene.game.inputs["left_click_down"]:
             pass
-            # # 全てのマッチ/一方攻撃が終了した場合、次の状態へ遷移
-            # if self.queue_index >= len(self.queue):
-            #     self._go_next_state()
-            #     return
-            #
-            # # 処理するペア（マッチ/一方攻撃）
-            # pair = self.queue[self.queue_index]
-            #
-            # # マッチ/一方攻撃準備フェーズ
-            # if self.phase == ResolvePhase.PREPARE:
-            #     done, res = self._prepare_one_step(pair)  # 1ダイスだけ処理を進める
-            #
-            #     # 現在のペアが終了した場合、次のペアへ
-            #     if done:
-            #         self.queue_index += 1
-            #         self.a_index = 0
-            #         self.b_index = 0
-            #         return
-            #
-            #     # 終了していないのに結果がない場合
-            #     if res is None:
-            #         return
-            #
-            #     # 次のフェーズへ
-            #     self.step_result = res
-            #     self.phase = ResolvePhase.ROLL
-            #     return
-            #
-            # # ダイスロールで値を確定するフェーズ --
-            # if self.phase == ResolvePhase.ROLL:
-            #     # ダイスロール実行
-            #     self._confirm_roll(self.step_result)
-            #
-            #     # 次のフェーズへ
-            #     self.phase = ResolvePhase.APPLY
-            #     return
-            # # ---------------------------------
-            #
-            # # ダメージ適用フェーズ ---------------
-            # if self.phase == ResolvePhase.APPLY:
-            #     self.diff_a_index, self.diff_b_index = self._apply_one_step(self.step_result)  # 1ダイス分だけダメージ判定
-            #     self.phase = ResolvePhase.HOLD
-            #     return
-            # # ---------------------------------
-            #
-            # # 結果固定表示フェーズ ---------------
-            # if self.phase == ResolvePhase.HOLD:
-            #     # 表示は残したまま
-            #     self.step_result = None
-            #     self.a_index += self.diff_a_index
-            #     self.b_index += self.diff_b_index
-            #     self.diff_a_index = 0
-            #     self.diff_b_index = 0
-            #     self.phase = ResolvePhase.PREPARE
-            #     return
-            # # ---------------------------------
 
     def update(self, dt: float) -> None:
 
@@ -218,12 +163,20 @@ class ResolveState(BattleState):
                 self.is_next_phase = False
                 self.phase = ResolvePhase.PREPARE
             else:
-                self.step_result = None
                 self.a_index += self.diff_a_index
-                self.b_index += self.diff_b_index
+
+                # 保存ダイスとマッチ時
+                if self.step_result and self.step_result.is_clash_remaining_dice:
+                    if self.diff_b_index > 0:
+                        defender = self.step_result.b_vel_dice.owner
+                        defender.remaining_dices.pop(0)
+                else:
+                    self.b_index += self.diff_b_index
+
                 self.diff_a_index = 0
                 self.diff_b_index = 0
                 self.is_next_phase = True
+                self.step_result = None
             return
         # ---------------------------------
         # =====================================
@@ -234,7 +187,7 @@ class ResolveState(BattleState):
 
         pair = self.queue[self.queue_index]
 
-        # ダイス一覧（pairから取る）
+        # ダイス一覧
         a_dices = pair.a_vel_dice.card.dice_list if pair.a_vel_dice and pair.a_vel_dice.card else []
         b_dices = pair.b_vel_dice.card.dice_list if pair.b_vel_dice and pair.b_vel_dice.card else []
 
@@ -356,6 +309,29 @@ class ResolveState(BattleState):
         else:
             attacker_vel_dice = pair.a_vel_dice
             defender_vel_dice = pair.b_vel_dice
+
+            # 被攻撃側が守備の保存ダイスを持っている場合、保存ダイスとマッチ準備
+            if defender_vel_dice.owner.remaining_dices:
+                a_dices = attacker_vel_dice.card.dice_list
+                b_dices = defender_vel_dice.owner.remaining_dices
+
+                a_die = a_dices[self.a_index]
+                b_die = b_dices[0]
+                a_die.val = None
+                b_die.val = None
+
+                res = StepResult(
+                    clash_type=ClashType.CLASH,
+                    is_use_a_index=None,
+                    is_clash_remaining_dice=True,
+                    a_vel_dice=attacker_vel_dice,
+                    b_vel_dice=defender_vel_dice,
+                    a_die=a_die,
+                    b_die=b_die,
+                )
+
+                return False, res
+
             return self._step_one_sided_prepare(attacker_vel_dice, defender_vel_dice, True)
 
     def _step_clash_prepare(self, pair: ResolverPair) -> tuple[bool, StepResult | None]:
@@ -399,6 +375,8 @@ class ResolveState(BattleState):
         # ダイス
         a_die = a_dices[self.a_index]
         b_die = b_dices[self.b_index]
+        a_die.val = None
+        b_die.val = None
 
         res = StepResult(
             clash_type=ClashType.CLASH,
@@ -431,6 +409,7 @@ class ResolveState(BattleState):
             return True, None
 
         a_die = a_dices[idx]
+        a_die.val = None
 
         # 攻撃ダイス以外の場合
         if not is_attack(a_die):
