@@ -185,7 +185,7 @@ class ResolveState(BattleState):
             self.dt += dt
             # 次のフェーズへ
             if self.is_next_phase:
-                if self.dt >= 0.5:
+                if self.dt >= 0.1:
                     self.is_next_phase = False
                     self.dt = 0.0
                     self.phase = ResolvePhase.APPLY
@@ -424,6 +424,12 @@ class ResolveState(BattleState):
 
         # 攻撃者のダイス
         a_dices = list(attacker_vel_dice.card.dice_list)
+
+        # 攻撃ダイスがひとつもない場合、保存して終了
+        if not any(is_attack(die) for die in a_dices):
+            attacker.remaining_dices.extend(a_dices)
+            return True, None
+
         a_die = a_dices[idx]
 
         # 攻撃ダイス以外の場合
